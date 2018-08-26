@@ -1,0 +1,4 @@
+[submodule "CockBot-OpenAPI"]
+	path = CockBot-OpenAPI
+	url = git@github.com:OpenAlcoholics/CockBot-OpenAPI.git
+	branch = feature/opencocktailapi
