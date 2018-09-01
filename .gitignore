@@ -38,3 +38,9 @@ gradle-app.setting
 .idea_modules/
 .idea/
 out/
+
+# Vertx
+.vertx
+
+# Dotenv
+**/.env

@@ -1,4 +1,8 @@
+[submodule "src/main/resources/migration"]
+	path = src/main/resources/migration
+	url = https://github.com/OpenAlcoholics/CockBot-OpenAPI.git
+	branch = feature/opencocktail_db
 [submodule "src/main/resources/openapi"]
 	path = src/main/resources/openapi
-	url = git@github.com:OpenAlcoholics/CockBot-OpenAPI.git
+	url = https://github.com/OpenAlcoholics/CockBot-OpenAPI.git
 	branch = feature/opencocktailapi
