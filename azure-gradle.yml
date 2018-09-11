@@ -1,0 +1,13 @@
+parameters:
+  tasks: 'test'
+  publishTestResults: true
+
+steps:
+- task: Gradle@2
+  inputs:
+    gradleWrapperFile: ${{ parameters.wrapper }}
+    tasks: ${{ parameters.tasks }}
+    publishJUnitResults: ${{ parameters.publishTestResults }}
+    testResultsFiles: '**/TEST-*.xml'
+    javaHomeOption: 'JDKVersion'
+    jdkVersionOption: '1.8'
