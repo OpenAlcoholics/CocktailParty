@@ -25,4 +25,5 @@ jobs:
     vmImage: 'VS2017-Win2016'
   steps:
   - template: azure-gradle.yml
-    wrapper: gradlew.bat
+    parameters:
+      wrapper: gradlew.bat
