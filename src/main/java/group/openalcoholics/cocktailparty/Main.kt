@@ -1,3 +1,4 @@
+@file:JvmName("Main")
 package group.openalcoholics.cocktailparty
 
 import group.openalcoholics.cocktailparty.api.Api

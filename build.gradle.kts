@@ -11,7 +11,7 @@ plugins {
 }
 
 application {
-    mainClassName = "group.openalcoholics.cocktailparty.HelloWorld"
+    mainClassName = "group.openalcoholics.cocktailparty.Main"
 }
 
 dependencies {
@@ -39,7 +39,6 @@ dependencies {
     testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-engine", version = "5.2.0")
     testCompile(kotlin("test-junit", "1.2.61"))
     testCompile(group = "name.falgout.jeffrey.testing.junit5", name = "guice-extension", version = "1.0.2")
-
 }
 
 buildscript {
