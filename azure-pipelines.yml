@@ -35,6 +35,7 @@ jobs:
     vmImage: 'VS2017-Win2016'
   steps:
   - script: 'git submodule update --init'
+    displayName: Update submodule
   - template: azure-postgres.yml
   - template: azure-gradle.yml
     parameters:
