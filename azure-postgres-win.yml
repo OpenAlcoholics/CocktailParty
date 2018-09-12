@@ -3,10 +3,10 @@ steps:
     iex (new-object net.webclient).downloadstring('https://get.scoop.sh')
     scoop update
     scoop install postgresql
-    echo $PGPASSWORD > pw.txt
-    initdb -U $DB_USER --pwfile="pw.txt"
+    echo $env:PGPASSWORD > pw.txt
+    initdb -U $env:DB_USER --pwfile="pw.txt"
     Start-Process pg_ctl start
-    createdb $DB_NAME
+    createdb $env:DB_NAME
   displayName: Install and run postgresql
   env:
     PGPASSWORD: $(db_pass_secret)
