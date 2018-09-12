@@ -9,7 +9,7 @@ jobs:
     # specify the version you desire here
     - image: circleci/openjdk:8-jdk
 
-    - image: circleci/postgres:10.5
+    - image: circleci/postgres:10.5-alpine
       environment:
         POSTGRES_DB: cocktail_test
         POSTGRES_USER: testuser
