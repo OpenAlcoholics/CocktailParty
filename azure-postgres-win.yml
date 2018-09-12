@@ -1,6 +1,6 @@
 steps:
-  - script: iex (new-object net.webclient).downloadstring('https://get.scoop.sh')
-    displayName: Install scoop
-  - script: |
-      scoop update
-      scoop install postgresql
+- powershell: iex (new-object net.webclient).downloadstring('https://get.scoop.sh')
+  displayName: Install scoop
+- powershell: |
+    scoop update
+    scoop install postgresql
