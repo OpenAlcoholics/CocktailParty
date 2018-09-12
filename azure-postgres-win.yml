@@ -3,6 +3,5 @@ steps:
     iex (new-object net.webclient).downloadstring('https://get.scoop.sh')
     scoop update
     scoop install postgresql
-  displayName: Install postgresql
-- powershell: pg_ctl start
-  displayName: Start postgresql
+    pg_ctl start
+  displayName: Install and run postgresql
