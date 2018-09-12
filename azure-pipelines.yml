@@ -1,6 +1,5 @@
 jobs:
 - job: Linux
-  condition: "false" # no postgres docker image for windows
   pool:
     vmImage: 'ubuntu-16.04'
   steps:
