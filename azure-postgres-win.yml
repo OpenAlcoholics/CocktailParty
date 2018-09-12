@@ -4,3 +4,5 @@ steps:
     scoop update
     scoop install postgresql
   displayName: Install postgresql
+- powershell: pg_ctl start
+  displayName: Start postgresql
