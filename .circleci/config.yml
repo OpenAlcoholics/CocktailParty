@@ -9,10 +9,11 @@ jobs:
     # specify the version you desire here
     - image: circleci/openjdk:8-jdk
 
-    # Specify service dependencies here if necessary
-    # CircleCI maintains a library of pre-built images
-    # documented at https://circleci.com/docs/2.0/circleci-images/
-    # - image: circleci/postgres:9.4
+    - image: circleci/postgres:10.5
+      environment:
+        POSTGRES_DB: cocktail_test
+        POSTGRES_USER: testuser
+        POSTGRES_PASSWORD: testpass # fuck it, I can't use env vars here
 
     working_directory: ~/repo
 
@@ -22,6 +23,9 @@ jobs:
 
     steps:
     - checkout
+    - run: git submodule sync
+    - run: git submodule update --init
+    - run: chmod +x gradlew
 
     # Download and cache dependencies
     - restore_cache:
@@ -30,7 +34,8 @@ jobs:
         # fallback to using the latest cache if no exact match is found
         - v1-dependencies-
 
-    - run: gradle dependencies
+    - run: ./gradlew dependencies
+    - run: ./gradlew flywayMigrate
 
     - save_cache:
         paths:
@@ -38,7 +43,7 @@ jobs:
         key: v1-dependencies-{{ checksum "build.gradle.kts" }}
 
     # run tests!
-    - run: gradle test
+    - run: ./gradlew test
 
     - store_test_results:
         path: build/test-results

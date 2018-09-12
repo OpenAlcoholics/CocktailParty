@@ -1,9 +1,11 @@
 parameters:
   tasks: 'test'
   publishTestResults: true
+  displayName: Gradle
 
 steps:
 - task: Gradle@2
+  displayName: ${{ parameters.displayName }}
   inputs:
     gradleWrapperFile: ${{ parameters.wrapper }}
     tasks: ${{ parameters.tasks }}
@@ -11,3 +13,5 @@ steps:
     testResultsFiles: '**/TEST-*.xml'
     javaHomeOption: 'JDKVersion'
     jdkVersionOption: '1.8'
+  env:
+    DB_PASS: $(db_pass_secret)

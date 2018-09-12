@@ -3,10 +3,20 @@ jobs:
   pool:
     vmImage: 'ubuntu-16.04'
   steps:
+  - script: 'git submodule update --init'
+    displayName: Update submodule
+  - template: azure-postgres.yml
+  - template: azure-gradle.yml
+    parameters:
+      wrapper: gradlew
+      tasks: flywayClean flywayMigrate
+      displayName: Flyway migrations
+      publishTestResults: false
   - template: azure-gradle.yml
     parameters:
       wrapper: gradlew
       tasks: test distZip
+      displayName: Gradle test and dist
   - task: CopyFiles@2
     inputs:
       sourceFolder: build/distributions/
@@ -19,11 +29,20 @@ jobs:
       pathtoPublish: '$(Build.ArtifactStagingDirectory)/dist'
       artifactName: 'dist'
       publishLocation: 'Container'
-
 - job: Windows
+  condition: "false" # no postgres docker image for windows
   pool:
     vmImage: 'VS2017-Win2016'
   steps:
+  - script: 'git submodule update --init'
+  - template: azure-postgres.yml
   - template: azure-gradle.yml
     parameters:
       wrapper: gradlew.bat
+      tasks: flywayClean flywayMigrate
+      publishTestResults: false
+      displayName: Flyway migrations
+  - template: azure-gradle.yml
+    parameters:
+      wrapper: gradlew.bat
+      displayName: Gradle test
