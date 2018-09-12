@@ -5,7 +5,19 @@ jobs:
   steps:
   - script: 'git submodule update --init'
     displayName: Update submodule
-  - template: azure-postgres.yml
+  - task: Docker@1
+    displayName: 'Deploy postgres database'
+    inputs:
+      command: 'run'
+      containerName: Postgresql
+      ports: 5432:5432
+      restartPolicy: onFailure
+      runInBackground: true
+      imageName: postgres:10.5-alpine
+      envVars: |
+        POSTGRES_DB=$(db_name)
+        POSTGRES_USER=$(db_user)
+        POSTGRES_PASSWORD=$(db_pass_secret)
   - template: azure-gradle.yml
     parameters:
       wrapper: gradlew
@@ -36,7 +48,7 @@ jobs:
   steps:
   - script: 'git submodule update --init'
     displayName: Update submodule
-  - template: azure-postgres.yml
+  - template: azure-postgres-win.yml
   - template: azure-gradle.yml
     parameters:
       wrapper: gradlew.bat
