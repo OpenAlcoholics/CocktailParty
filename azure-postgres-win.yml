@@ -6,7 +6,7 @@ steps:
     echo $env:PGPASSWORD > pw.txt
     initdb -U $env:DB_USER --pwfile="pw.txt"
     Start-Process pg_ctl start
-    createdb -U $env:DB_USER $env:DB_NAME
+    createdb -w -U $env:DB_USER $env:DB_NAME
   displayName: Install and run postgresql
   env:
     PGPASSWORD: $(db_pass_secret)
