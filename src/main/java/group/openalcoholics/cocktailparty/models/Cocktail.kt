@@ -11,9 +11,17 @@
  */
 package group.openalcoholics.cocktailparty.models
 
+import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.databind.DeserializationContext
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import group.openalcoholics.cocktailparty.db.dao.CocktailCategoryDao
 import group.openalcoholics.cocktailparty.db.dao.GlassDao
 import org.jdbi.v3.core.mapper.Nested
+import org.jdbi.v3.core.mapper.reflect.ColumnName
 import java.time.Instant
 
 /**
@@ -35,8 +43,8 @@ data class Cocktail(
         val name: kotlin.String,
         /* A description of the cocktail */
         val description: kotlin.String,
-        /* A list of ingredients. Items may be a single ingredient or a list of ingredients which can be poured simulatenously. */
-        val ingredients: List<Ingredient> = mutableListOf(),
+        /* A list of ingredients. Items may be a single ingredient or a list of ingredients which can be poured simultaneously. */
+        val ingredients: List<Any> = mutableListOf(),
         @Nested("${CocktailCategoryDao.TABLE_NAME}.")
         val category: CocktailCategory,
         @Nested("${GlassDao.TABLE_NAME}.")
@@ -44,9 +52,9 @@ data class Cocktail(
         /* A link to an image of the cocktail */
         val imageLink: kotlin.String? = null,
         /* The time of the latest update to the recipe */
-        val revisionDate: Instant? = null,
         /* Arbitrary notes on the cocktail */
-        val notes: kotlin.String? = null
+        val notes: kotlin.String? = null,
+        val revisionDate: Long? = null
 ) : BaseModel<Cocktail> {
     override fun withId(id: Int): Cocktail {
         return copy(id = id)
@@ -81,5 +89,44 @@ data class Cocktail(
         result = 31 * result + (notes?.hashCode() ?: 0)
         return result
     }
+
+    @Suppress("UNCHECKED_CAST")
+    fun flatIngredients(): Sequence<Ingredient> = ingredients.asSequence()
+            .flatMap {
+                if (it is Ingredient) sequenceOf(it)
+                else (it as List<Ingredient>).asSequence()
+            }
+
+    @Suppress("UNCHECKED_CAST")
+    fun rankedIngredients(block: (Int, Ingredient) -> Unit) {
+        ingredients
+                .asSequence()
+                .mapIndexed { index, any ->
+                    if (any is Ingredient) sequenceOf(index to any)
+                    else (any as List<Ingredient>).asSequence().map { index to it }
+                }
+                .flatMap { it }
+                .forEach { (rank, ingredient) -> block(rank, ingredient) }
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    fun rankedIngredients(): Sequence<Pair<Int, Ingredient>> {
+        return ingredients
+                .asSequence()
+                .mapIndexed { index, any ->
+                    if (any is Ingredient) sequenceOf(index to any)
+                    else (any as List<Ingredient>).asSequence().map { index to it }
+                }
+                .flatMap { it }
+    }
 }
 
+@Suppress("MoveLambdaOutsideParentheses")
+object IngredientComparator :
+        Comparator<Any> by compareBy({ IngredientComparator.rank(it) }) {
+
+    @Suppress("UNCHECKED_CAST")
+    private fun rank(any: Any) = if (any is Ingredient) any.rank
+    else (any as List<Ingredient>).firstOrNull()!!.rank
+
+}

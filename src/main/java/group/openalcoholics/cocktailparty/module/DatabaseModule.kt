@@ -5,6 +5,7 @@ import com.google.inject.Provides
 import com.google.inject.Singleton
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
+import group.openalcoholics.cocktailparty.db.TimestampArgumentFactory
 import io.github.cdimascio.dotenv.Dotenv
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.KotlinPlugin
@@ -56,6 +57,7 @@ class DatabaseModule : AbstractModule() {
             .installPlugin(PostgresPlugin())
             .installPlugin(KotlinSqlObjectPlugin())
             .installPlugin(SqlObjectPlugin())
+            .registerArgument(TimestampArgumentFactory())
 
     private companion object {
         val HOST = "DB_HOST"

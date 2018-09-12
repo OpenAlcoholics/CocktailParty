@@ -48,8 +48,37 @@ data class Ingredient (
         return copy(id = id)
     }
 
-    override fun toString(): String {
-        return "Ingredient(id=$id, name='$name')"
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Ingredient
+
+        if (id != other.id) return false
+        if (name != other.name) return false
+        if (alcoholPercentage != other.alcoholPercentage) return false
+        if (category != other.category) return false
+        if (share != other.share) return false
+        if (imageLink != other.imageLink) return false
+        if (notes != other.notes) return false
+
+        return true
     }
+
+    override fun hashCode(): Int {
+        var result = id
+        result = 31 * result + name.hashCode()
+        result = 31 * result + alcoholPercentage
+        result = 31 * result + category.hashCode()
+        result = 31 * result + (share ?: 0)
+        result = 31 * result + (imageLink?.hashCode() ?: 0)
+        result = 31 * result + (notes?.hashCode() ?: 0)
+        return result
+    }
+
+
+/*    override fun toString(): String {
+        return "Ingredient(id=$id, name='$name')"
+    }*/
 }
 

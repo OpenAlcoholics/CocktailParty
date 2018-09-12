@@ -1,6 +1,11 @@
 package group.openalcoholics.cocktailparty.api.handler
 
-import group.openalcoholics.cocktailparty.api.*
+import group.openalcoholics.cocktailparty.api.Status
+import group.openalcoholics.cocktailparty.api.bodyAs
+import group.openalcoholics.cocktailparty.api.end
+import group.openalcoholics.cocktailparty.api.fail
+import group.openalcoholics.cocktailparty.api.pathId
+import group.openalcoholics.cocktailparty.api.setStatus
 import group.openalcoholics.cocktailparty.db.dao.BaseDao
 import group.openalcoholics.cocktailparty.models.BaseModel
 import io.vertx.ext.web.RoutingContext
@@ -16,16 +21,19 @@ interface CrudHandler {
     fun delete(ctx: RoutingContext)
 }
 
-inline fun <reified T : BaseModel<T>, reified D : BaseDao<T>> defaultCrudHandler(jdbi: Jdbi): CrudHandler =
-        defaultCrudHandler(T::class, D::class, jdbi)
+inline fun <reified T : BaseModel<T>, reified D : BaseDao<T>> defaultCrudHandler(
+    jdbi: Jdbi): CrudHandler =
+    defaultCrudHandler(T::class, D::class, jdbi)
 
-fun <T : BaseModel<T>, D : BaseDao<T>> defaultCrudHandler(tClass: KClass<T>, dClass: KClass<D>, jdbi: Jdbi): CrudHandler =
-        DefaultCrudHandler(tClass, dClass, jdbi)
+fun <T : BaseModel<T>, D : BaseDao<T>> defaultCrudHandler(tClass: KClass<T>, dClass: KClass<D>,
+    jdbi: Jdbi): CrudHandler =
+    DefaultCrudHandler(tClass, dClass, jdbi)
 
 private class DefaultCrudHandler<T : BaseModel<T>, D : BaseDao<T>>(
-        private val tClass: KClass<T>,
-        private val daoClass: KClass<D>,
-        private val jdbi: Jdbi) : CrudHandler {
+    private val tClass: KClass<T>,
+    private val daoClass: KClass<D>,
+    private val jdbi: Jdbi) : CrudHandler {
+
     override fun get(ctx: RoutingContext) {
         val id = ctx.pathId()
         val entity = jdbi.withExtensionUnchecked(daoClass) {
@@ -37,29 +45,29 @@ private class DefaultCrudHandler<T : BaseModel<T>, D : BaseDao<T>>(
     }
 
     override fun insert(ctx: RoutingContext) {
-        val glass = ctx.bodyAs(tClass)
-        val insertedGlass = glass.withId(jdbi.withExtensionUnchecked(daoClass) {
-            it.insert(glass)
+        val entity = ctx.bodyAs(tClass)
+        val inserted = entity.withId(jdbi.withExtensionUnchecked(daoClass) {
+            it.insert(entity)
         })
-        ctx.response().end(insertedGlass)
+        ctx.response().end(inserted)
     }
 
     override fun update(ctx: RoutingContext) {
-        val updatedGlass = ctx.bodyAs(tClass)
+        val updatedEntity = ctx.bodyAs(tClass)
         val id = ctx.pathId()
         jdbi.withExtensionUnchecked(daoClass) {
             it.find(id)
         } ?: return ctx.fail(Status.NOT_FOUND)
 
         jdbi.useExtensionUnchecked(daoClass) {
-            it.update(updatedGlass)
+            it.update(updatedEntity)
         }
 
-        val resultGlass = jdbi.withExtensionUnchecked(daoClass) {
+        val result = jdbi.withExtensionUnchecked(daoClass) {
             it.find(id)
         } ?: return ctx.fail(Status.NOT_FOUND)
 
-        ctx.response().end(resultGlass)
+        ctx.response().end(result)
     }
 
     override fun delete(ctx: RoutingContext) {

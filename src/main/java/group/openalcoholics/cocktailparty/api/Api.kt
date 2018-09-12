@@ -2,6 +2,8 @@ package group.openalcoholics.cocktailparty.api
 
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.google.inject.Inject
+import group.openalcoholics.cocktailparty.api.handler.CocktailCategoryHandler
+import group.openalcoholics.cocktailparty.api.handler.CocktailHandler
 import group.openalcoholics.cocktailparty.api.handler.GlassHandler
 import group.openalcoholics.cocktailparty.api.handler.IngredientCategoryHandler
 import group.openalcoholics.cocktailparty.api.handler.IngredientHandler
@@ -14,10 +16,12 @@ import io.vertx.ext.web.api.contract.openapi3.OpenAPI3RouterFactory
 import io.vertx.kotlin.ext.web.api.contract.RouterFactoryOptions
 
 class Api @Inject constructor(
-        private val versionHandler: VersionHandler,
-        private val glassHandler: GlassHandler,
-        private val ingredientCategoryHandler: IngredientCategoryHandler,
-        private val ingredientHandler: IngredientHandler) : AbstractVerticle() {
+    private val versionHandler: VersionHandler,
+    private val glassHandler: GlassHandler,
+    private val ingredientCategoryHandler: IngredientCategoryHandler,
+    private val ingredientHandler: IngredientHandler,
+    private val cocktailCategoryHandler: CocktailCategoryHandler,
+    private val cocktailHandler: CocktailHandler) : AbstractVerticle() {
 
     private fun OpenAPI3RouterFactory.register(controller: HandlerController) = this.apply {
         controller.register(this)
@@ -34,15 +38,16 @@ class Api @Inject constructor(
                 // Spec loaded with success
                 val routerFactory = result.result()!!
                 routerFactory.options = RouterFactoryOptions(
-                        mountNotImplementedHandler = true
+                    mountNotImplementedHandler = true
                 )
 
                 routerFactory
-                        .register(versionHandler)
-                        .register(glassHandler)
-                        .register(ingredientCategoryHandler)
-                        .register(ingredientHandler)
-                // TODO register other handlers
+                    .register(versionHandler)
+                    .register(glassHandler)
+                    .register(ingredientCategoryHandler)
+                    .register(ingredientHandler)
+                    .register(cocktailCategoryHandler)
+                    .register(cocktailHandler)
 
                 routerFactory.addSecurityHandler("name") { ctx ->
                     // TODO check api key

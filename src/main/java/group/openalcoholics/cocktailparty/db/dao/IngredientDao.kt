@@ -13,7 +13,7 @@ interface IngredientDao : SqlObject, BaseDao<Ingredient> {
                     ${IngredientCategoryDao.head("${IngredientCategoryDao.TABLE_NAME}.")}
                 FROM $TABLE_NAME
                 INNER JOIN ${IngredientCategoryDao.TABLE_NAME}
-                    ON ${IngredientCategoryDao.TABLE_NAME}.id = $TABLE_NAME.category
+                    ON ${IngredientCategoryDao.TABLE_NAME}.id = $TABLE_NAME.category_id
                 WHERE $TABLE_NAME.id = :id
             """.trimIndent())
             .bind("id", id)
@@ -23,7 +23,7 @@ interface IngredientDao : SqlObject, BaseDao<Ingredient> {
 
     @GetGeneratedKeys("id")
     @SqlUpdate("""
-        INSERT INTO $TABLE_NAME(name, image_link, notes, alcohol_percentage, category)
+        INSERT INTO $TABLE_NAME(name, image_link, notes, alcohol_percentage, category_id)
         VALUES(:entity.name, :entity.imageLink, :entity.notes, :entity.alcoholPercentage, :entity.category.id)
     """)
     override fun insert(entity: Ingredient): Int
@@ -31,7 +31,7 @@ interface IngredientDao : SqlObject, BaseDao<Ingredient> {
     @SqlUpdate("""
         UPDATE $TABLE_NAME
         SET name = :entity.name, image_link = :entity.imageLink, notes = :entity.notes,
-            alcohol_percentage = :entity.alcoholPercentage, category = :entity.category.id
+            alcohol_percentage = :entity.alcoholPercentage, category_id = :entity.category.id
         WHERE id = :entity.id
     """)
     override fun update(entity: Ingredient)
@@ -48,10 +48,10 @@ interface IngredientDao : SqlObject, BaseDao<Ingredient> {
                     ${IngredientCategoryDao.head("${IngredientCategoryDao.TABLE_NAME}.")}
                 FROM $TABLE_NAME
                 INNER JOIN ${IngredientCategoryDao.TABLE_NAME}
-                    ON ${IngredientCategoryDao.TABLE_NAME}.id = $TABLE_NAME.category
+                    ON ${IngredientCategoryDao.TABLE_NAME}.id = $TABLE_NAME.category_id
                 WHERE (TRUE
                     ${if (query == null) "" else "AND LOWER($TABLE_NAME.name) LIKE LOWER(CONCAT(\'%\', :q, \'%\'))"}
-                    ${if (category == null) "" else "AND $TABLE_NAME.category = :category"}
+                    ${if (category == null) "" else "AND $TABLE_NAME.category_id = :category"}
                 )
             """)
             .apply {
@@ -64,7 +64,7 @@ interface IngredientDao : SqlObject, BaseDao<Ingredient> {
         const val TABLE_NAME = "ingredients"
         override val tableName: String
             get() = TABLE_NAME
-        override val columns = listOf("id", "name", "image_link", "notes", "alcohol_percentage", "category")
+        override val columns = listOf("id", "name", "image_link", "notes", "alcohol_percentage", "category_id")
         val LOCAL_HEAD = head("")
     }
 }

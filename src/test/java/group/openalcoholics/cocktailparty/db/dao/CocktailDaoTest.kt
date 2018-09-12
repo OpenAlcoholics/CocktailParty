@@ -2,6 +2,7 @@ package group.openalcoholics.cocktailparty.db.dao
 
 import com.google.inject.Inject
 import group.openalcoholics.cocktailparty.models.Cocktail
+import io.vertx.core.json.Json
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.useExtensionUnchecked
 import org.jdbi.v3.core.kotlin.withExtensionUnchecked
@@ -34,8 +35,8 @@ class CocktailDaoTest @Inject constructor(private val jdbi: Jdbi) : BaseDaoTest<
             categories.first(),
             glasses.first(),
             "link$id",
-            null,
-            "notes$id"
+            "notes$id",
+            0
     )
 
     override fun modifiedVersions(entity: Cocktail) = sequenceOf(
@@ -54,7 +55,7 @@ class CocktailDaoTest @Inject constructor(private val jdbi: Jdbi) : BaseDaoTest<
 
     override fun insert(entity: Cocktail): Int = jdbi.withExtensionUnchecked(CocktailDao::class) {
         it.insert(entity).also { cocktailId ->
-            for (ingredient in entity.ingredients) {
+            for (ingredient in entity.flatIngredients()) {
                 it.addIngredient(cocktailId, ingredient.id, ingredient.share!!, ingredient.rank!!)
             }
         }
@@ -75,20 +76,21 @@ class CocktailDaoTest @Inject constructor(private val jdbi: Jdbi) : BaseDaoTest<
 
     @TestFactory
     fun searchKnown(): Stream<DynamicTest> = sequenceOf(
-            Search(expectedSize = 2),
+            Search(expectedSize = 3),
             Search(alcoholic = true, expectedSize = 2),
-            Search(query = "", expectedSize = 2),
+            Search(query = "", expectedSize = 3),
             Search(query = "gin & tonic", expectedSize = 1),
-            Search(query = "gin", expectedSize = 1),
-            Search(query = "o", category = 1, expectedSize = 2))
+            Search(query = "gin", expectedSize = 2),
+            Search(query = "o", category = 1, expectedSize = 3),
+            Search(alcoholic = false, expectedSize = 1))
             .map { (query, category, alcoholic, expectedSize) ->
                 DynamicTest.dynamicTest("""Search for "$query" in category $category, alcoholic: $alcoholic""") {
                     val result = jdbi.withExtensionUnchecked(CocktailDao::class) {
                         it.search(query, category, alcoholic)
                     }
-                    assertEquals(expectedSize, result.size)
+                    assertEquals(expectedSize, result.size, Json.encodePrettily(result))
                     for (cocktail in result) {
-                        val ingredients = cocktail.ingredients
+                        val ingredients = cocktail.flatIngredients().toList()
                         ingredients.forEach {
                             assertNotNull(it.rank)
                         }
@@ -102,9 +104,9 @@ class CocktailDaoTest @Inject constructor(private val jdbi: Jdbi) : BaseDaoTest<
             Search("*"),
             Search("bricks"),
             Search(query = "o", category = 2),
-            Search(alcoholic = false))
+            Search(query = "tonic", alcoholic = false))
             .map { (query, category, alcoholic) ->
-                DynamicTest.dynamicTest("""Search for "$query"""") {
+                DynamicTest.dynamicTest("""Search for "$query, category=$category, alcoholic=$alcoholic"""") {
                     val result = jdbi.withExtensionUnchecked(CocktailDao::class) {
                         it.search(query, category, alcoholic)
                     }

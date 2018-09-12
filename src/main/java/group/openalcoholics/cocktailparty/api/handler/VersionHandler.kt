@@ -13,7 +13,9 @@ private fun computeVersion(): Version {
     // TODO load api version from spec file
     // TODO insert implementation version in build process
     return Version("0.1.0",
-            ImplementationInfo("CocktailParty", "0.1.0", "https://github.com/OpenAlcoholics/CocktailParty"))
+        ImplementationInfo("CocktailParty",
+            "0.1.0",
+            "https://github.com/OpenAlcoholics/CocktailParty"))
 }
 
 class VersionHandler : HandlerController {

@@ -3,6 +3,8 @@ package group.openalcoholics.cocktailparty.module
 import com.google.inject.AbstractModule
 import com.google.inject.Provides
 import com.google.inject.Singleton
+import group.openalcoholics.cocktailparty.api.handler.CocktailCategoryHandler
+import group.openalcoholics.cocktailparty.api.handler.CocktailHandler
 import group.openalcoholics.cocktailparty.api.handler.GlassHandler
 import group.openalcoholics.cocktailparty.api.handler.IngredientCategoryHandler
 import group.openalcoholics.cocktailparty.api.handler.IngredientHandler
@@ -25,6 +27,14 @@ class WebModule : AbstractModule() {
     @Provides
     @Singleton
     fun provideIngredientCategoryHandler(jdbi: Jdbi) = IngredientCategoryHandler(jdbi)
+
+    @Provides
+    @Singleton
+    fun provideCocktailHandler(jdbi: Jdbi) = CocktailHandler(jdbi)
+
+    @Provides
+    @Singleton
+    fun provideCocktailCategoryHandler(jdbi: Jdbi) = CocktailCategoryHandler(jdbi)
 
     @Provides
     @Singleton
