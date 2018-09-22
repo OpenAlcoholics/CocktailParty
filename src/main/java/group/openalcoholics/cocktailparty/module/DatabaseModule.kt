@@ -37,15 +37,13 @@ class DatabaseModule : AbstractModule() {
     @Singleton
     fun provideDataSource(dbConfig: DatabaseConfig): DataSource = HikariConfig().let { config ->
         val jdbcUrl = "jdbc:postgresql://${dbConfig.host}:${dbConfig.port}/${dbConfig.name}"
-        config.jdbcUrl = jdbcUrl
-        config.driverClassName = "org.postgresql.Driver"
+        config.dataSourceClassName = PGSimpleDataSource::class.java.name
 
-        config.username = dbConfig.user
-        config.password = dbConfig.pass
-        config.addDataSourceProperty("dataSourceClassName", PGSimpleDataSource::class.java.canonicalName);
-        config.addDataSourceProperty("autoCommit", "false");
-        config.addDataSourceProperty("useServerPrepStmts", "true");
-        config.addDataSourceProperty("cachePrepStmts", "true");
+        config.addDataSourceProperty("serverName", dbConfig.host)
+        config.addDataSourceProperty("portNumber", dbConfig.port)
+        config.addDataSourceProperty("databaseName", dbConfig.name)
+        config.addDataSourceProperty("user", dbConfig.user)
+        config.isAutoCommit = false
 
         HikariDataSource(config)
     }
@@ -53,11 +51,11 @@ class DatabaseModule : AbstractModule() {
     @Provides
     @Singleton
     fun provideJdbi(dataSource: DataSource): Jdbi = Jdbi.create(dataSource)
-            .installPlugin(KotlinPlugin())
-            .installPlugin(PostgresPlugin())
-            .installPlugin(KotlinSqlObjectPlugin())
-            .installPlugin(SqlObjectPlugin())
-            .registerArgument(TimestampArgumentFactory())
+        .installPlugin(KotlinPlugin())
+        .installPlugin(PostgresPlugin())
+        .installPlugin(KotlinSqlObjectPlugin())
+        .installPlugin(SqlObjectPlugin())
+        .registerArgument(TimestampArgumentFactory())
 
     private companion object {
         val HOST = "DB_HOST"
@@ -69,10 +67,10 @@ class DatabaseModule : AbstractModule() {
 }
 
 data class DatabaseConfig(
-        val host: String,
-        val port: String,
-        val name: String,
-        val user: String,
-        val pass: String)
+    val host: String,
+    val port: String,
+    val name: String,
+    val user: String,
+    val pass: String)
 
 class MissingConfigException(key: String) : RuntimeException("Missing config key: $key")
