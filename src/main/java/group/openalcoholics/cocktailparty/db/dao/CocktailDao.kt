@@ -16,7 +16,7 @@ interface CocktailDao : SqlObject, BaseDao<Cocktail> {
                 SELECT $LOCAL_HEAD,
                     ${CocktailCategoryDao.head("${CocktailCategoryDao.TABLE_NAME}.")},
                     ${GlassDao.head("${GlassDao.TABLE_NAME}.")},
-                    $INGREDIENT_RELATION_TABLE_NAME.ingredient_id AS "$INGREDIENT_RELATION_TABLE_NAME.ingredient_id"
+                    $INGREDIENT_RELATION_TABLE_NAME.ingredient_id AS "$INGREDIENT_RELATION_TABLE_NAME.ingredient_id",
                     $INGREDIENT_RELATION_TABLE_NAME.share AS "$INGREDIENT_RELATION_TABLE_NAME.share",
                     $INGREDIENT_RELATION_TABLE_NAME.rank AS "$INGREDIENT_RELATION_TABLE_NAME.rank"
                 FROM (SELECT *
@@ -104,7 +104,7 @@ interface CocktailDao : SqlObject, BaseDao<Cocktail> {
                 SELECT $LOCAL_HEAD,
                     ${CocktailCategoryDao.head("${CocktailCategoryDao.TABLE_NAME}.")},
                     ${GlassDao.head("${GlassDao.TABLE_NAME}.")},
-                    $INGREDIENT_RELATION_TABLE_NAME.ingredient_id AS "$INGREDIENT_RELATION_TABLE_NAME.ingredient_id"
+                    $INGREDIENT_RELATION_TABLE_NAME.ingredient_id AS "$INGREDIENT_RELATION_TABLE_NAME.ingredient_id",
                     $INGREDIENT_RELATION_TABLE_NAME.share AS "$INGREDIENT_RELATION_TABLE_NAME.share",
                     $INGREDIENT_RELATION_TABLE_NAME.rank AS "$INGREDIENT_RELATION_TABLE_NAME.rank"
                 FROM (SELECT *
@@ -124,8 +124,9 @@ interface CocktailDao : SqlObject, BaseDao<Cocktail> {
             if (query != null) bind("q", query)
             if (category != null) bind("category", category)
         }
-        .registerRowMapper(Ingredient::class.java,
-            KotlinMapper(Ingredient::class.java, "${IngredientDao.TABLE_NAME}."))
+        .registerRowMapper(IngredientShare::class.java,
+            KotlinMapper(IngredientShare::class.java,
+                "${CocktailDao.Companion.INGREDIENT_RELATION_TABLE_NAME}."))
         .reduceRows(LinkedHashMap<Int, Cocktail>()) { map, r ->
             val cocktail = map.computeIfAbsent(r.getColumn("id", Integer::class.java).toInt()) {
                 val cocktail = r.getRow(Cocktail::class.java)
