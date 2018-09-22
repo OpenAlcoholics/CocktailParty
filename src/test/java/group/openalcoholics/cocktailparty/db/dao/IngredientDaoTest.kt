@@ -18,28 +18,28 @@ class IngredientDaoTest @Inject constructor(private val jdbi: Jdbi) : BaseDaoTes
     }
 
     override fun create(id: Int): Ingredient = Ingredient(
-            id,
-            "name$id",
-            100,
-            categories[0],
-            null, // not persisted rn
-            "link$id",
-            "notes$id")
+        id,
+        "name$id",
+        100,
+        categories[0],
+        "link$id",
+        "notes$id")
 
     override fun modifiedVersions(entity: Ingredient): Sequence<Ingredient> = sequenceOf(
-            entity.copy(name = entity.name + "Mod"),
-            entity.copy(alcoholPercentage = entity.alcoholPercentage - 1),
-            entity.copy(category = categories[1]),
-            entity.copy(imageLink = entity.imageLink + "Mod"),
-            entity.copy(imageLink = null),
-            entity.copy(notes = entity.notes + "Mod")
+        entity.copy(name = entity.name + "Mod"),
+        entity.copy(alcoholPercentage = entity.alcoholPercentage - 1),
+        entity.copy(category = categories[1]),
+        entity.copy(imageLink = entity.imageLink + "Mod"),
+        entity.copy(imageLink = null),
+        entity.copy(notes = entity.notes + "Mod")
     )
 
     override fun find(id: Int): Ingredient? = jdbi.withExtensionUnchecked(IngredientDao::class) {
         it.find(id)
     }
 
-    override fun insert(entity: Ingredient): Int = jdbi.withExtensionUnchecked(IngredientDao::class) {
+    override fun insert(entity: Ingredient): Int = jdbi.withExtensionUnchecked(
+        IngredientDao::class) {
         it.insert(entity)
     }
 
@@ -55,31 +55,31 @@ class IngredientDaoTest @Inject constructor(private val jdbi: Jdbi) : BaseDaoTes
 
     @TestFactory
     fun searchKnown(): Stream<DynamicTest> = sequenceOf(
-            Search("", null, 5),
-            Search(null, null, 5),
-            Search("gin", null, 1),
-            Search(null, 1, 2),
-            Search(null, 2, 1))
-            .map { (query, category, expectedSize) ->
-                DynamicTest.dynamicTest("""Search for "$query" in category $category""") {
-                    val result = jdbi.withExtensionUnchecked(IngredientDao::class) {
-                        it.search(query, category)
-                    }
-                    assertEquals(expectedSize, result.size)
+        Search("", null, 5),
+        Search(null, null, 5),
+        Search("gin", null, 1),
+        Search(null, 1, 2),
+        Search(null, 2, 1))
+        .map { (query, category, expectedSize) ->
+            DynamicTest.dynamicTest("""Search for "$query" in category $category""") {
+                val result = jdbi.withExtensionUnchecked(IngredientDao::class) {
+                    it.search(query, category)
                 }
-            }.asStream()
+                assertEquals(expectedSize, result.size)
+            }
+        }.asStream()
 
     @TestFactory
     fun searchUnknown(): Stream<DynamicTest> = sequenceOf(
-            "*" to null,
-            "bricks" to null,
-            null to 42)
-            .map { (query, category) ->
-                DynamicTest.dynamicTest("""Search for "$query"""") {
-                    val result = jdbi.withExtensionUnchecked(IngredientDao::class) {
-                        it.search(query, category)
-                    }
-                    assertEquals(emptyList(), result)
+        "*" to null,
+        "bricks" to null,
+        null to 42)
+        .map { (query, category) ->
+            DynamicTest.dynamicTest("""Search for "$query"""") {
+                val result = jdbi.withExtensionUnchecked(IngredientDao::class) {
+                    it.search(query, category)
                 }
-            }.asStream()
+                assertEquals(emptyList(), result)
+            }
+        }.asStream()
 }

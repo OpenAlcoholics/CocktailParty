@@ -28,20 +28,12 @@ class CocktailHandler(private val jdbi: Jdbi) : HandlerController,
 
     override fun insert(ctx: RoutingContext) {
         val cocktail = ctx.bodyAs<Cocktail>()
-        if (cocktail.ingredients.asSequence()
-                .flatMap {
-                    @Suppress("UNCHECKED_CAST")
-                    if (it is Ingredient) sequenceOf(it)
-                    else (it as List<Ingredient>).asSequence()
-                }
-                .map { it.share }
-                .any { it == null }) {
-            return ctx.fail(Status.BAD_REQUEST)
-        }
         val inserted = cocktail.withId(jdbi.withExtensionUnchecked(CocktailDao::class) {
             it.insert(cocktail).also { id ->
-                cocktail.rankedIngredients { index, ingredient ->
-                    it.addIngredient(id, ingredient.id, ingredient.share!!, index)
+                cocktail.ingredients.forEachIndexed { rank, ingredients ->
+                    ingredients.forEach { ingredient ->
+                        it.addIngredient(id, ingredient.ingredientId, ingredient.share, rank)
+                    }
                 }
             }
         })
@@ -58,20 +50,15 @@ class CocktailHandler(private val jdbi: Jdbi) : HandlerController,
             end("Cocktail not found.")
         }
 
-        val (added, removed) = diff(old.ingredients, updated.ingredients)
-
-        val result = jdbi.withExtensionUnchecked(CocktailDao::class) {
-            it.update(updated)
-            /*     for (ingredient in added) {
-                     it.addIngredient(id, ingredient.id, ingredient.share!!, rank = 0)
-                 }*/
-            /*for (ingredient in removed) {
-                it.removeIngredient(id, ingredient.id)
+        val result = jdbi.withExtensionUnchecked(CocktailDao::class) { dao ->
+            dao.update(updated)
+            dao.dropIngredients(id)
+            updated.ingredients.forEachIndexed { rank, ingredients ->
+                ingredients.forEach {
+                    dao.addIngredient(id, it.ingredientId, it.share, rank)
+                }
             }
-            updated.ingredients.forEachIndexed { index, ingredient ->
-                it.updateIngredientRank(id, ingredient.id, index)
-            }*/
-            it.find(id)
+            dao.find(id)
         } ?: return ctx.response().run {
             setStatus(Status.NOT_FOUND)
             end("Cocktail not found. (removed while updating)")
@@ -83,33 +70,9 @@ class CocktailHandler(private val jdbi: Jdbi) : HandlerController,
     private fun search(ctx: RoutingContext) {
         val query = ctx.queryParam("q").firstOrNull()
         val category = ctx.queryParam("category").firstOrNull()?.toInt()
-        val alcoholic = ctx.queryParam("alcoholic").firstOrNull()?.toBoolean()
         val cocktails = jdbi.withExtensionUnchecked(CocktailDao::class) {
-            it.search(query, category, alcoholic)
+            it.search(query, category)
         }
         ctx.response().end(cocktails)
     }
-}
-
-private data class Diff<E>(val added: Collection<E>, val removed: Collection<E>)
-
-private fun <E> diff(before: Collection<E>, after: Collection<E>): Diff<E> {
-    println("Befor: $before\nAfter: $after")
-    // TODO This algorithm is bad.
-    val beforeSet = before.toSet()
-    val afterSet = after.toSet()
-    val added = HashSet<E>()
-    val removed = HashSet<E>()
-    for (e in before) {
-        if (e !in afterSet) {
-            removed.add(e)
-        }
-    }
-    for (e in after) {
-        if (e !in beforeSet) {
-            added.add(e)
-        }
-    }
-    println("Added: $added\nRemov: $removed")
-    return Diff(added, removed)
 }
