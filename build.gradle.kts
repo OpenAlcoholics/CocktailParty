@@ -15,30 +15,30 @@ application {
 }
 
 dependencies {
-    compile(kotlin("stdlib-jdk8"))
-    compile("org.slf4j:slf4j-simple:1.7.25")
-    compile("com.google.guava:guava:26.0-jre")
+    implementation(kotlin("stdlib-jdk8"))
+    implementation("org.slf4j:slf4j-simple:1.7.25")
+    implementation("com.google.guava:guava:26.0-jre")
 
-    compile("io.github.cdimascio:java-dotenv:3.1.2")
+    implementation("io.github.cdimascio:java-dotenv:3.1.2")
 
-    compile("io.vertx:vertx-web-api-contract:3.5.3")
-    compile("io.vertx:vertx-lang-kotlin:3.5.3")
-    compile("io.vertx:vertx-rx-java2:3.5.3")
-    compile("io.reactivex.rxjava2:rxkotlin:2.2.0")
-    compile("com.englishtown.vertx:vertx-guice:2.3.1")
+    implementation("io.vertx:vertx-web-api-contract:3.5.3")
+    implementation("io.vertx:vertx-lang-kotlin:3.5.3")
+    implementation("io.vertx:vertx-rx-java2:3.5.3")
+    implementation("io.reactivex.rxjava2:rxkotlin:2.2.0")
+    implementation("com.englishtown.vertx:vertx-guice:2.3.1")
 
-    compile(group = "org.flywaydb", name = "flyway-core", version = "5.1.4")
-    compile("org.jdbi:jdbi3-core:3.3.0")
-    compile("org.jdbi:jdbi3-kotlin:3.3.0")
-    compile("org.jdbi:jdbi3-postgres:3.3.0")
-    compile("org.jdbi:jdbi3-kotlin-sqlobject:3.3.0")
-    compile("com.zaxxer:HikariCP:3.2.0")
-    compile("com.fasterxml.jackson.module:jackson-module-kotlin:2.9.+")
+    implementation(group = "org.flywaydb", name = "flyway-core", version = "5.1.4")
+    implementation("org.jdbi:jdbi3-core:3.3.0")
+    implementation("org.jdbi:jdbi3-kotlin:3.3.0")
+    implementation("org.jdbi:jdbi3-postgres:3.3.0")
+    implementation("org.jdbi:jdbi3-kotlin-sqlobject:3.3.0")
+    implementation("com.zaxxer:HikariCP:3.2.0")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.9.+")
 
-    testCompile(group = "org.junit.jupiter", name = "junit-jupiter-api", version = "5.2.0")
+    testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-api", version = "5.2.0")
     testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-engine", version = "5.2.0")
-    testCompile(kotlin("test-junit", "1.2.61"))
-    testCompile(group = "name.falgout.jeffrey.testing.junit5", name = "guice-extension", version = "1.0.2")
+    testImplementation(kotlin("test-junit", "1.2.61"))
+    testImplementation(group = "name.falgout.jeffrey.testing.junit5", name = "guice-extension", version = "1.0.2")
 }
 
 buildscript {
