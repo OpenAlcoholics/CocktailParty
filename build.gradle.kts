@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     application
-    kotlin("jvm") version "1.2.61"
+    kotlin("jvm") version "1.2.70"
     id("org.jetbrains.dokka") version "0.9.17"
 
     id("org.flywaydb.flyway") version "5.1.4"
@@ -35,9 +35,9 @@ dependencies {
     implementation("com.zaxxer:HikariCP:3.2.0")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.9.+")
 
-    testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-api", version = "5.2.0")
-    testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-engine", version = "5.2.0")
-    testImplementation(kotlin("test-junit", "1.2.61"))
+    testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-api", version = "5.3.1")
+    testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-engine", version = "5.3.1")
+    testImplementation(kotlin("test-junit", "1.2.70"))
     testImplementation(group = "name.falgout.jeffrey.testing.junit5", name = "guice-extension", version = "1.0.2")
 }
 
