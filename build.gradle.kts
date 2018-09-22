@@ -47,6 +47,7 @@ buildscript {
     }
     dependencies {
         classpath("io.github.cdimascio:java-dotenv:3.1.2")
+        classpath("org.postgresql:postgresql:42.2.5")
     }
 }
 
