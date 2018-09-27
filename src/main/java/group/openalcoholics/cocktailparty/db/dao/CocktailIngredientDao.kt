@@ -1,9 +1,10 @@
 package group.openalcoholics.cocktailparty.db.dao
 
 import group.openalcoholics.cocktailparty.models.CocktailIngredient
+import org.jdbi.v3.sqlobject.SqlObject
 import org.jdbi.v3.sqlobject.statement.SqlUpdate
 
-interface CocktailIngredientDao : BaseDao<CocktailIngredient> {
+interface CocktailIngredientDao : SqlObject, BaseDao<CocktailIngredient> {
     @SqlUpdate("""
         DELETE FROM $TABLE_NAME
         WHERE drink_id = :id
