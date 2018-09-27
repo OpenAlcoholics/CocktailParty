@@ -37,22 +37,15 @@ import java.time.Instant
  * @param notes Arbitrary notes on the cocktail
  */
 data class Cocktail(
-    /* The cocktail ID */
     val id: kotlin.Int,
-    /* The name of the cocktail */
     val name: kotlin.String,
-    /* A description of the cocktail */
     val description: kotlin.String,
-    /* A list of ingredients. Items may be a single ingredient or a list of ingredients which can be poured simultaneously. */
     val ingredients: List<List<IngredientShare>> = emptyList(),
     @Nested("${CocktailCategoryDao.TABLE_NAME}.")
     val category: CocktailCategory,
     @Nested("${GlassDao.TABLE_NAME}.")
     val glass: Glass,
-    /* A link to an image of the cocktail */
     val imageLink: kotlin.String? = null,
-    /* The time of the latest update to the recipe */
-    /* Arbitrary notes on the cocktail */
     val notes: kotlin.String? = null,
     val revisionDate: Long? = null,
     @JsonIgnore

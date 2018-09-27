@@ -11,33 +11,25 @@
  */
 package group.openalcoholics.cocktailparty.models
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import group.openalcoholics.cocktailparty.db.dao.IngredientCategoryDao
-import group.openalcoholics.cocktailparty.models.IngredientCategory
 import org.jdbi.v3.core.mapper.Nested
 
 /**
  * A liquid ingredient of a cocktail.
  * @param id The ingredient ID
  * @param name The name of the ingredient
- * @param share The share in a cocktail of the ingredient in percent
  * @param imageLink A link to an image of the ingredient
  * @param alcoholPercentage The percentage of alcohol content in the ingredient
  * @param category
  * @param notes Arbitrary notes on the ingredient
  */
 data class Ingredient(
-    /* The ingredient ID */
     val id: kotlin.Int,
-    /* The name of the ingredient */
     val name: kotlin.String,
-    /* The percentage of alcohol content in the ingredient */
     val alcoholPercentage: kotlin.Int,
     @Nested("${IngredientCategoryDao.TABLE_NAME}.")
     val category: IngredientCategory,
-    /* A link to an image of the ingredient */
     val imageLink: kotlin.String? = null,
-    /* Arbitrary notes on the ingredient */
     val notes: kotlin.String? = null
 ) : BaseModel<Ingredient> {
 
