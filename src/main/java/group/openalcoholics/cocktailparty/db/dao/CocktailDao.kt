@@ -1,7 +1,6 @@
 package group.openalcoholics.cocktailparty.db.dao
 
 import group.openalcoholics.cocktailparty.models.Cocktail
-import group.openalcoholics.cocktailparty.models.Ingredient
 import group.openalcoholics.cocktailparty.models.IngredientShare
 import org.jdbi.v3.core.kotlin.KotlinMapper
 import org.jdbi.v3.sqlobject.SqlObject
@@ -39,7 +38,7 @@ interface CocktailDao : SqlObject, BaseDao<Cocktail> {
             cocktail.flatIngredients.add(ingredientShare)
             cocktail
         }
-        ?.withSortedIngredients()
+        ?.transferFromMutable()
 
     @GetGeneratedKeys("id")
     @Timestamped
@@ -138,7 +137,7 @@ interface CocktailDao : SqlObject, BaseDao<Cocktail> {
             map
         }
         .values
-        .map { it.withSortedIngredients() }
+        .map { it.transferFromMutable() }
 
     companion object : BaseDaoCompanion {
         const val TABLE_NAME = "drinks"

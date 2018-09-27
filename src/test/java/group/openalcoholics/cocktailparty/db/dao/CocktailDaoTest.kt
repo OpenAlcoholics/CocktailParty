@@ -31,6 +31,7 @@ class CocktailDaoTest @Inject constructor(private val jdbi: Jdbi) : BaseDaoTest<
         "name$id",
         "desc$id",
         listOf(listOf(ingredients[0]), listOf(ingredients[1])),
+        emptyList(),
         categories.first(),
         glasses.first(),
         "link$id",
