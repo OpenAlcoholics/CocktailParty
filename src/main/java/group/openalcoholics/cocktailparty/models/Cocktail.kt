@@ -34,8 +34,8 @@ data class Cocktail(
     val id: kotlin.Int,
     val name: kotlin.String,
     val description: kotlin.String,
-    val ingredients: List<List<IngredientShare>> = emptyList(),
-    val accessories: List<Accessory> = emptyList(),
+    val ingredients: List<List<CocktailIngredient>> = emptyList(),
+    val accessories: List<CocktailAccessory> = emptyList(),
     @Nested("${CocktailCategoryDao.TABLE_NAME}.")
     val category: CocktailCategory,
     @Nested("${GlassDao.TABLE_NAME}.")
@@ -44,9 +44,9 @@ data class Cocktail(
     val notes: kotlin.String? = null,
     val revisionDate: Long? = null,
     @JsonIgnore
-    val flatIngredients: MutableList<IngredientShare> = mutableListOf(),
+    val flatIngredients: MutableList<CocktailIngredient> = mutableListOf(),
     @JsonIgnore
-    val mutableAccessories: MutableList<Accessory> = mutableListOf()
+    val mutableAccessories: MutableList<CocktailAccessory> = mutableListOf()
 ) : BaseModel<Cocktail> {
 
     override fun withId(id: Int): Cocktail {

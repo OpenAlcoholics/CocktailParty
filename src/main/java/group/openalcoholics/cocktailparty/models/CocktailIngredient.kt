@@ -2,7 +2,13 @@ package group.openalcoholics.cocktailparty.models
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 
-data class IngredientShare(
+/**
+ * The relation of an ingredient to a cocktail.
+ *
+ * @param ingredientId The ingredient ID.
+ * @param share The share (in percent) of the ingredient in a cocktail.
+ */
+data class CocktailIngredient(
     val ingredientId: Int,
     val share: Int,
     @JsonIgnore
@@ -12,7 +18,7 @@ data class IngredientShare(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as IngredientShare
+        other as CocktailIngredient
 
         if (ingredientId != other.ingredientId) return false
         if (share != other.share) return false

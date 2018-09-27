@@ -7,7 +7,7 @@ import group.openalcoholics.cocktailparty.api.end
 import group.openalcoholics.cocktailparty.api.pathId
 import group.openalcoholics.cocktailparty.api.setStatus
 import group.openalcoholics.cocktailparty.db.dao.CocktailDao
-import group.openalcoholics.cocktailparty.db.dao.IngredientShareDao
+import group.openalcoholics.cocktailparty.db.dao.CocktailIngredientDao
 import group.openalcoholics.cocktailparty.models.Cocktail
 import io.vertx.ext.web.RoutingContext
 import io.vertx.ext.web.api.contract.openapi3.OpenAPI3RouterFactory
@@ -30,7 +30,7 @@ class CocktailHandler(private val jdbi: Jdbi) : HandlerController,
         val inserted = cocktail.withId(jdbi.withExtensionUnchecked(CocktailDao::class) {
             it.insert(cocktail)
         })
-        jdbi.withExtensionUnchecked(IngredientShareDao::class) {
+        jdbi.withExtensionUnchecked(CocktailIngredientDao::class) {
             cocktail.ingredients.forEachIndexed { rank, ingredients ->
                 ingredients.forEach { ingredient ->
                     it.addIngredient(inserted.id, ingredient.ingredientId, ingredient.share, rank)
@@ -58,7 +58,7 @@ class CocktailHandler(private val jdbi: Jdbi) : HandlerController,
             end("Cocktail not found. (removed while updating)")
         }
 
-        jdbi.withExtensionUnchecked(IngredientShareDao::class) { dao ->
+        jdbi.withExtensionUnchecked(CocktailIngredientDao::class) { dao ->
             dao.dropIngredients(id)
             updated.ingredients.forEachIndexed { rank, ingredients ->
                 ingredients.forEach {

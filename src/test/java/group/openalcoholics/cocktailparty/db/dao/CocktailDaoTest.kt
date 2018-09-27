@@ -2,7 +2,7 @@ package group.openalcoholics.cocktailparty.db.dao
 
 import com.google.inject.Inject
 import group.openalcoholics.cocktailparty.models.Cocktail
-import group.openalcoholics.cocktailparty.models.IngredientShare
+import group.openalcoholics.cocktailparty.models.CocktailIngredient
 import io.vertx.core.json.Json
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.useExtensionUnchecked
@@ -16,7 +16,7 @@ import kotlin.test.assertNotNull
 
 class CocktailDaoTest @Inject constructor(private val jdbi: Jdbi) : BaseDaoTest<Cocktail> {
     private val ingredients = (1..3)
-        .map { IngredientShare(it, it * 10) }
+        .map { CocktailIngredient(it, it * 10) }
 
     private val categories = jdbi.withExtensionUnchecked(CocktailCategoryDao::class) { dao ->
         (1..2).map { dao.find(it) }.map { it!! }.toList()
@@ -56,7 +56,7 @@ class CocktailDaoTest @Inject constructor(private val jdbi: Jdbi) : BaseDaoTest<
     override fun insert(entity: Cocktail): Int = jdbi.withExtensionUnchecked(CocktailDao::class) {
         it.insert(entity)
     }.also { cocktailId ->
-        jdbi.withExtensionUnchecked(IngredientShareDao::class) {
+        jdbi.withExtensionUnchecked(CocktailIngredientDao::class) {
             entity.ingredients.forEachIndexed { rank, shares ->
                 shares.forEach { share ->
                     it.addIngredient(cocktailId, share.ingredientId, share.share, rank)

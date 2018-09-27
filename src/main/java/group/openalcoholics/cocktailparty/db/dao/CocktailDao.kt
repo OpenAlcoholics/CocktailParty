@@ -1,7 +1,7 @@
 package group.openalcoholics.cocktailparty.db.dao
 
 import group.openalcoholics.cocktailparty.models.Cocktail
-import group.openalcoholics.cocktailparty.models.IngredientShare
+import group.openalcoholics.cocktailparty.models.CocktailIngredient
 import org.jdbi.v3.core.kotlin.KotlinMapper
 import org.jdbi.v3.sqlobject.SqlObject
 import org.jdbi.v3.sqlobject.customizer.Timestamped
@@ -15,7 +15,7 @@ interface CocktailDao : SqlObject, BaseDao<Cocktail> {
                 SELECT $LOCAL_HEAD,
                     ${CocktailCategoryDao.head("${CocktailCategoryDao.TABLE_NAME}.")},
                     ${GlassDao.head("${GlassDao.TABLE_NAME}.")},
-                    ${IngredientShareDao.head("${IngredientShareDao.TABLE_NAME}.")}
+                    ${CocktailIngredientDao.head("${CocktailIngredientDao.TABLE_NAME}.")}
                 FROM (SELECT *
                     FROM $TABLE_NAME
                     WHERE $TABLE_NAME.id = :id
@@ -24,15 +24,15 @@ interface CocktailDao : SqlObject, BaseDao<Cocktail> {
                     ON ${CocktailCategoryDao.TABLE_NAME}.id = $TABLE_NAME.category_id
                 INNER JOIN ${GlassDao.TABLE_NAME}
                     ON ${GlassDao.TABLE_NAME}.id = $TABLE_NAME.glass_id
-                INNER JOIN ${IngredientShareDao.TABLE_NAME}
-                    ON ${IngredientShareDao.TABLE_NAME}.drink_id = $TABLE_NAME.id
+                INNER JOIN ${CocktailIngredientDao.TABLE_NAME}
+                    ON ${CocktailIngredientDao.TABLE_NAME}.drink_id = $TABLE_NAME.id
             """.trimIndent())
         .bind("id", id)
-        .registerRowMapper(IngredientShare::class.java,
-            KotlinMapper(IngredientShare::class.java, "${IngredientShareDao.TABLE_NAME}."))
+        .registerRowMapper(CocktailIngredient::class.java,
+            KotlinMapper(CocktailIngredient::class.java, "${CocktailIngredientDao.TABLE_NAME}."))
         .reduceRows(null) { mainTail: Cocktail?, r ->
             val cocktail = mainTail ?: r.getRow(Cocktail::class.java)
-            val ingredientShare = r.getRow(IngredientShare::class.java)
+            val ingredientShare = r.getRow(CocktailIngredient::class.java)
             cocktail.flatIngredients.add(ingredientShare)
             cocktail
         }
@@ -67,7 +67,7 @@ interface CocktailDao : SqlObject, BaseDao<Cocktail> {
                 SELECT $LOCAL_HEAD,
                     ${CocktailCategoryDao.head("${CocktailCategoryDao.TABLE_NAME}.")},
                     ${GlassDao.head("${GlassDao.TABLE_NAME}.")},
-                    ${IngredientShareDao.head("${IngredientShareDao.TABLE_NAME}.")}
+                    ${CocktailIngredientDao.head("${CocktailIngredientDao.TABLE_NAME}.")}
                 FROM (SELECT *
                     FROM $TABLE_NAME
                     WHERE (TRUE
@@ -79,22 +79,22 @@ interface CocktailDao : SqlObject, BaseDao<Cocktail> {
                     ON ${CocktailCategoryDao.TABLE_NAME}.id = $TABLE_NAME.category_id
                 INNER JOIN ${GlassDao.TABLE_NAME}
                     ON ${GlassDao.TABLE_NAME}.id = $TABLE_NAME.glass_id
-                INNER JOIN ${IngredientShareDao.TABLE_NAME}
-                    ON ${IngredientShareDao.TABLE_NAME}.drink_id = $TABLE_NAME.id
+                INNER JOIN ${CocktailIngredientDao.TABLE_NAME}
+                    ON ${CocktailIngredientDao.TABLE_NAME}.drink_id = $TABLE_NAME.id
             """).apply {
             if (query != null) bind("q", query)
             if (category != null) bind("category", category)
         }
-        .registerRowMapper(IngredientShare::class.java,
-            KotlinMapper(IngredientShare::class.java,
-                "${IngredientShareDao.TABLE_NAME}."))
+        .registerRowMapper(CocktailIngredient::class.java,
+            KotlinMapper(CocktailIngredient::class.java,
+                "${CocktailIngredientDao.TABLE_NAME}."))
         .reduceRows(LinkedHashMap<Int, Cocktail>()) { map, r ->
             val cocktail = map.computeIfAbsent(r.getColumn("id", Integer::class.java).toInt()) {
                 val cocktail = r.getRow(Cocktail::class.java)
                 cocktail
             }
 
-            val ingredientShare = r.getRow(IngredientShare::class.java)
+            val ingredientShare = r.getRow(CocktailIngredient::class.java)
             cocktail.flatIngredients.add(ingredientShare)
             map
         }
