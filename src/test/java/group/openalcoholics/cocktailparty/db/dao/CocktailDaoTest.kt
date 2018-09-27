@@ -54,7 +54,9 @@ class CocktailDaoTest @Inject constructor(private val jdbi: Jdbi) : BaseDaoTest<
     }
 
     override fun insert(entity: Cocktail): Int = jdbi.withExtensionUnchecked(CocktailDao::class) {
-        it.insert(entity).also { cocktailId ->
+        it.insert(entity)
+    }.also { cocktailId ->
+        jdbi.withExtensionUnchecked(IngredientShareDao::class) {
             entity.ingredients.forEachIndexed { rank, shares ->
                 shares.forEach { share ->
                     it.addIngredient(cocktailId, share.ingredientId, share.share, rank)

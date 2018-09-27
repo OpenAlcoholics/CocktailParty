@@ -15,9 +15,7 @@ interface CocktailDao : SqlObject, BaseDao<Cocktail> {
                 SELECT $LOCAL_HEAD,
                     ${CocktailCategoryDao.head("${CocktailCategoryDao.TABLE_NAME}.")},
                     ${GlassDao.head("${GlassDao.TABLE_NAME}.")},
-                    $INGREDIENT_RELATION_TABLE_NAME.ingredient_id AS "$INGREDIENT_RELATION_TABLE_NAME.ingredient_id",
-                    $INGREDIENT_RELATION_TABLE_NAME.share AS "$INGREDIENT_RELATION_TABLE_NAME.share",
-                    $INGREDIENT_RELATION_TABLE_NAME.rank AS "$INGREDIENT_RELATION_TABLE_NAME.rank"
+                    ${IngredientShareDao.head("${IngredientShareDao.TABLE_NAME}.")}
                 FROM (SELECT *
                     FROM $TABLE_NAME
                     WHERE $TABLE_NAME.id = :id
@@ -26,12 +24,12 @@ interface CocktailDao : SqlObject, BaseDao<Cocktail> {
                     ON ${CocktailCategoryDao.TABLE_NAME}.id = $TABLE_NAME.category_id
                 INNER JOIN ${GlassDao.TABLE_NAME}
                     ON ${GlassDao.TABLE_NAME}.id = $TABLE_NAME.glass_id
-                INNER JOIN $INGREDIENT_RELATION_TABLE_NAME
-                    ON $INGREDIENT_RELATION_TABLE_NAME.drink_id = $TABLE_NAME.id
+                INNER JOIN ${IngredientShareDao.TABLE_NAME}
+                    ON ${IngredientShareDao.TABLE_NAME}.drink_id = $TABLE_NAME.id
             """.trimIndent())
         .bind("id", id)
         .registerRowMapper(IngredientShare::class.java,
-            KotlinMapper(IngredientShare::class.java, "$INGREDIENT_RELATION_TABLE_NAME."))
+            KotlinMapper(IngredientShare::class.java, "${IngredientShareDao.TABLE_NAME}."))
         .reduceRows(null) { mainTail: Cocktail?, r ->
             val cocktail = mainTail ?: r.getRow(Cocktail::class.java)
             val ingredientShare = r.getRow(IngredientShare::class.java)
@@ -47,40 +45,6 @@ interface CocktailDao : SqlObject, BaseDao<Cocktail> {
         VALUES(:entity.name, :entity.imageLink, :entity.description, :now, :entity.notes, :entity.category.id, :entity.glass.id)
     """)
     override fun insert(entity: Cocktail): Int
-
-    @SqlUpdate("""
-        DELETE FROM $INGREDIENT_RELATION_TABLE_NAME
-        WHERE id = :id
-    """)
-    fun dropIngredients(cocktailId: Int)
-
-    @SqlUpdate("""
-        INSERT INTO $INGREDIENT_RELATION_TABLE_NAME(
-            drink_id,
-            ingredient_id,
-            share,
-            rank)
-        VALUES(
-            :cocktailId,
-            :ingredientId,
-            :share,
-            :rank)
-    """)
-    fun addIngredient(cocktailId: Int, ingredientId: Int, share: Int, rank: Int)
-
-    @SqlUpdate("""
-        DELETE
-        FROM $INGREDIENT_RELATION_TABLE_NAME
-        WHERE drink_id = :cocktailId AND ingredient_id = :ingredientId
-    """)
-    fun removeIngredient(cocktailId: Int, ingredientId: Int)
-
-    @SqlUpdate("""
-        UPDATE $INGREDIENT_RELATION_TABLE_NAME
-        SET rank = :rank
-        WHERE drink_id = :cocktailId AND ingredient_id = :ingredientId
-    """)
-    fun updateIngredientRank(cocktailId: Int, ingredientId: Int, rank: Int)
 
     @Timestamped
     @SqlUpdate("""
@@ -103,9 +67,7 @@ interface CocktailDao : SqlObject, BaseDao<Cocktail> {
                 SELECT $LOCAL_HEAD,
                     ${CocktailCategoryDao.head("${CocktailCategoryDao.TABLE_NAME}.")},
                     ${GlassDao.head("${GlassDao.TABLE_NAME}.")},
-                    $INGREDIENT_RELATION_TABLE_NAME.ingredient_id AS "$INGREDIENT_RELATION_TABLE_NAME.ingredient_id",
-                    $INGREDIENT_RELATION_TABLE_NAME.share AS "$INGREDIENT_RELATION_TABLE_NAME.share",
-                    $INGREDIENT_RELATION_TABLE_NAME.rank AS "$INGREDIENT_RELATION_TABLE_NAME.rank"
+                    ${IngredientShareDao.head("${IngredientShareDao.TABLE_NAME}.")}
                 FROM (SELECT *
                     FROM $TABLE_NAME
                     WHERE (TRUE
@@ -117,15 +79,15 @@ interface CocktailDao : SqlObject, BaseDao<Cocktail> {
                     ON ${CocktailCategoryDao.TABLE_NAME}.id = $TABLE_NAME.category_id
                 INNER JOIN ${GlassDao.TABLE_NAME}
                     ON ${GlassDao.TABLE_NAME}.id = $TABLE_NAME.glass_id
-                INNER JOIN $INGREDIENT_RELATION_TABLE_NAME
-                    ON $INGREDIENT_RELATION_TABLE_NAME.drink_id = $TABLE_NAME.id
+                INNER JOIN ${IngredientShareDao.TABLE_NAME}
+                    ON ${IngredientShareDao.TABLE_NAME}.drink_id = $TABLE_NAME.id
             """).apply {
             if (query != null) bind("q", query)
             if (category != null) bind("category", category)
         }
         .registerRowMapper(IngredientShare::class.java,
             KotlinMapper(IngredientShare::class.java,
-                "${CocktailDao.Companion.INGREDIENT_RELATION_TABLE_NAME}."))
+                "${IngredientShareDao.TABLE_NAME}."))
         .reduceRows(LinkedHashMap<Int, Cocktail>()) { map, r ->
             val cocktail = map.computeIfAbsent(r.getColumn("id", Integer::class.java).toInt()) {
                 val cocktail = r.getRow(Cocktail::class.java)
@@ -141,7 +103,6 @@ interface CocktailDao : SqlObject, BaseDao<Cocktail> {
 
     companion object : BaseDaoCompanion {
         const val TABLE_NAME = "drinks"
-        const val INGREDIENT_RELATION_TABLE_NAME = "drink_ingredients"
         override val tableName: String
             get() = TABLE_NAME
         override val columns: List<String> = listOf(
@@ -155,7 +116,5 @@ interface CocktailDao : SqlObject, BaseDao<Cocktail> {
             "glass_id"
         )
         val LOCAL_HEAD = head("")
-
-
     }
 }
