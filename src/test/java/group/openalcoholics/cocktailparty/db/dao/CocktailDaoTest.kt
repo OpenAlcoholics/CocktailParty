@@ -2,6 +2,7 @@ package group.openalcoholics.cocktailparty.db.dao
 
 import com.google.inject.Inject
 import group.openalcoholics.cocktailparty.models.Cocktail
+import group.openalcoholics.cocktailparty.models.CocktailAccessory
 import group.openalcoholics.cocktailparty.models.CocktailIngredient
 import io.vertx.core.json.Json
 import org.jdbi.v3.core.Jdbi
@@ -17,6 +18,8 @@ import kotlin.test.assertNotNull
 class CocktailDaoTest @Inject constructor(private val jdbi: Jdbi) : BaseDaoTest<Cocktail> {
     private val ingredients = (1..3)
         .map { CocktailIngredient(it, it * 10) }
+    private val accessories = (1..2)
+        .map { CocktailAccessory(it, it * 3) }
 
     private val categories = jdbi.withExtensionUnchecked(CocktailCategoryDao::class) { dao ->
         (1..2).map { dao.find(it) }.map { it!! }.toList()
@@ -31,7 +34,7 @@ class CocktailDaoTest @Inject constructor(private val jdbi: Jdbi) : BaseDaoTest<
         "name$id",
         "desc$id",
         listOf(listOf(ingredients[0]), listOf(ingredients[1])),
-        emptyList(),
+        setOf(accessories.first()),
         categories.first(),
         glasses.first(),
         "link$id",
@@ -62,6 +65,9 @@ class CocktailDaoTest @Inject constructor(private val jdbi: Jdbi) : BaseDaoTest<
                     it.addIngredient(cocktailId, share.ingredientId, share.share, rank)
                 }
             }
+        }
+        jdbi.withExtensionUnchecked(CocktailAccessoryDao::class) { dao ->
+            entity.accessories.forEach { dao.addAccessory(cocktailId, it.accessoryId, it.pieces) }
         }
     }
 
@@ -115,4 +121,6 @@ class CocktailDaoTest @Inject constructor(private val jdbi: Jdbi) : BaseDaoTest<
                 assertEquals(emptyList(), result)
             }
         }.asStream()
+
+    // TODO test find and search for cocktails without ingredients/accessories
 }
