@@ -49,9 +49,8 @@ class Api @Inject constructor(
                     .register(cocktailCategoryHandler)
                     .register(cocktailHandler)
 
-                routerFactory.addSecurityHandler("name") { ctx ->
+                routerFactory.addSecurityHandler("ApiKey") { ctx ->
                     // TODO check api key
-                    // TODO find out why the schema name is "name", not "auth"
                     ctx.next()
                 }
 
