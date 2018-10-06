@@ -5,7 +5,7 @@ import com.google.inject.AbstractModule
 class FullBinder : AbstractModule() {
 
     override fun configure() {
-        install(CommonModule())
+        install(ConfigModule())
         install(DatabaseModule())
         install(WebModule())
     }

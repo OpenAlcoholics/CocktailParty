@@ -8,14 +8,17 @@ import group.openalcoholics.cocktailparty.api.handler.GlassHandler
 import group.openalcoholics.cocktailparty.api.handler.IngredientCategoryHandler
 import group.openalcoholics.cocktailparty.api.handler.IngredientHandler
 import group.openalcoholics.cocktailparty.api.handler.VersionHandler
+import group.openalcoholics.cocktailparty.module.ApiConfig
 import io.vertx.core.AbstractVerticle
 import io.vertx.core.Future
 import io.vertx.core.http.HttpServerOptions
 import io.vertx.core.json.Json
 import io.vertx.ext.web.api.contract.openapi3.OpenAPI3RouterFactory
 import io.vertx.kotlin.ext.web.api.contract.RouterFactoryOptions
+import mu.KotlinLogging
 
 class Api @Inject constructor(
+    private val apiConfig: ApiConfig,
     private val versionHandler: VersionHandler,
     private val glassHandler: GlassHandler,
     private val ingredientCategoryHandler: IngredientCategoryHandler,
@@ -23,10 +26,13 @@ class Api @Inject constructor(
     private val cocktailCategoryHandler: CocktailCategoryHandler,
     private val cocktailHandler: CocktailHandler) : AbstractVerticle() {
 
+    private val logger = KotlinLogging.logger {}
+
     private fun OpenAPI3RouterFactory.register(controller: HandlerController) = this.apply {
         controller.register(this)
     }
 
+    @Throws(ApiInitializationException::class)
     override fun start(startFuture: Future<Void>?) {
         OpenAPI3RouterFactory.create(vertx, "openapi/OpenCocktail.yaml") { result ->
             if (result.succeeded()) {
@@ -49,27 +55,41 @@ class Api @Inject constructor(
                     .register(cocktailCategoryHandler)
                     .register(cocktailHandler)
 
-                routerFactory.addSecurityHandler("ApiKey") { ctx ->
-                    // TODO check api key
-                    ctx.next()
+                logger.info("Registered")
+
+                /*
+                val jwtOptions = JWTAuthOptions(
+                    keyStore = KeyStoreOptions(
+                        path = "",
+                        password = ""
+                    ))
+                */
+
+                routerFactory.addSecurityHandler("Token") { ctx ->
+                    val rawToken: String? = ctx.request().getHeader("Authorization")
+                    if (rawToken.isNullOrBlank()) ctx.fail(Status.UNAUTHORIZED)
+                    else {
+                        // TODO check api key
+                        ctx.next()
+                    }
                 }
 
                 val router = routerFactory.router!!
 
                 val serverOptions = HttpServerOptions().apply {
-                    port = 8080
-                    host = "localhost"
+                    host = apiConfig.host
+                    port = apiConfig.port
                 }
                 val server = vertx.createHttpServer(serverOptions)
                 server.requestHandler { router.accept(it) }.listen()
             } else {
                 // Something went wrong during router factory initialization
                 val exception = result.cause()
-                // TODO handle
-                throw exception
+                logger.error("Error during RouterFactory initialization", exception)
+                throw ApiInitializationException(exception)
             }
         }
     }
-
 }
 
+class ApiInitializationException(cause: Throwable) : RuntimeException(cause)

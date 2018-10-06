@@ -1,0 +1,19 @@
+# This file contains all possible config keys and their default values.
+
+database:
+  # The host address of the postgres database server
+  host: localhost
+  # The database server port
+  port: 5432
+  # The name of the database
+  name: cocktail
+  # The database user
+  user:
+  # The database user's password
+  pass:
+
+api:
+  # The host address to bind to
+  host: 0.0.0.0
+  # The port to serve the API on
+  port: 8080

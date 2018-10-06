@@ -9,13 +9,32 @@ Compile using [Gradle](https://gradle.org/) and Java 1.8:
 ```
 
 ## Execution
-You may simply run the project with Gradle:
+The project may be executed with Gradle:
 ```
 ./gradlew run
 ```
 
-or you can run the following command, which builds the project and creates execution 
+or by running the following command, which builds the project and creates execution 
 scripts for Windows and Linux at `build/install/CocktailParty/bin`:
 ```
 ./gradlew installDist
 ```
+
+## Configuration
+The backend can be configured by [environment variables](#environment-variables) or
+a [config file](#config-file). Environment variables override values from the config file.
+
+### Config file
+The `config.yaml` file should reside in the working directory.
+
+A commented example config file can be found [in the repository root](config.example.yaml).
+
+### Environment variables
+The values from the config file can be overridden by environment variables.
+
+As for the format, the environment variable equivalent of the `config.yaml`
+```yaml
+database: 
+  host: localhost
+```
+is `DATABASE_HOST=localhost`.

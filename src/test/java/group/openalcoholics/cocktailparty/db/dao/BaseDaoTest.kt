@@ -2,14 +2,12 @@ package group.openalcoholics.cocktailparty.db.dao
 
 import group.openalcoholics.cocktailparty.db.DatabaseTest
 import group.openalcoholics.cocktailparty.models.BaseModel
-import io.github.cdimascio.dotenv.Dotenv
 import org.jdbi.v3.core.Jdbi
 import org.junit.jupiter.api.DynamicTest
 import org.junit.jupiter.api.DynamicTest.dynamicTest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestFactory
 import java.util.stream.Stream
-import javax.sql.DataSource
 import kotlin.streams.asStream
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull

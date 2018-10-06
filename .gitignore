@@ -42,5 +42,5 @@ out/
 # Vertx
 .vertx
 
-# Dotenv
-**/.env
+# Config
+config.yaml

@@ -3,6 +3,8 @@ package group.openalcoholics.cocktailparty.module
 import com.google.inject.AbstractModule
 import com.google.inject.Provides
 import com.google.inject.Singleton
+import com.jdiazcano.cfg4k.providers.ConfigProvider
+import com.jdiazcano.cfg4k.providers.bind
 import group.openalcoholics.cocktailparty.api.handler.CocktailCategoryHandler
 import group.openalcoholics.cocktailparty.api.handler.CocktailHandler
 import group.openalcoholics.cocktailparty.api.handler.GlassHandler
@@ -13,8 +15,13 @@ import org.jdbi.v3.core.Jdbi
 
 class WebModule : AbstractModule() {
     override fun configure() {
+        requireBinding(ConfigProvider::class.java)
         requireBinding(Jdbi::class.java)
     }
+
+    @Provides
+    @Singleton
+    fun provideApiConfig(provider: ConfigProvider) = provider.bind<ApiConfig>("api")
 
     @Provides
     @Singleton
@@ -39,4 +46,9 @@ class WebModule : AbstractModule() {
     @Provides
     @Singleton
     fun provideIngredientHandler(jdbi: Jdbi) = IngredientHandler(jdbi)
+}
+
+interface ApiConfig {
+    val host: String
+    val port: Int
 }

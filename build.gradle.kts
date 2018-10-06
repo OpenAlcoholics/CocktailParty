@@ -6,6 +6,7 @@ plugins {
     application
     kotlin("jvm") version "1.2.70"
     id("org.jetbrains.dokka") version "0.9.17"
+    idea
 
     id("org.flywaydb.flyway") version "5.1.4"
 }
@@ -20,11 +21,13 @@ dependencies {
     implementation("org.slf4j:slf4j-simple:1.7.25")
     implementation("com.google.guava:guava:26.0-jre")
 
-    implementation("io.github.cdimascio:java-dotenv:3.1.2")
+    implementation("com.jdiazcano.cfg4k:cfg4k-core:0.9.0")
+    implementation("com.jdiazcano.cfg4k:cfg4k-yaml:0.9.0")
 
     implementation("io.vertx:vertx-web-api-contract:3.5.3")
     implementation("io.vertx:vertx-lang-kotlin:3.5.3")
     implementation("io.vertx:vertx-rx-java2:3.5.3")
+    implementation("io.vertx:vertx-auth-jwt:3.5.3")
     implementation("io.reactivex.rxjava2:rxkotlin:2.2.0")
     implementation("com.englishtown.vertx:vertx-guice:2.3.1")
 
@@ -70,13 +73,19 @@ val dokka by tasks.getting(org.jetbrains.dokka.gradle.DokkaTask::class) {
 }
 
 flyway {
-    val dotenv = dotenv {
+    /*val dotenv = dotenv {
         this.directory = "$rootDir/src/main/resources"
     }
     url = "jdbc:postgresql://${dotenv["DB_HOST"]}:${dotenv["DB_PORT"]}/${dotenv["DB_NAME"]}"
     user = dotenv["DB_USER"]
     password = dotenv["DB_PASS"]
-    locations = arrayOf("filesystem:src/main/resources/migration/sql")
+    locations = arrayOf("filesystem:src/main/resources/migration/sql")*/
+}
+
+idea {
+    module {
+        isDownloadJavadoc = true
+    }
 }
 
 repositories {
