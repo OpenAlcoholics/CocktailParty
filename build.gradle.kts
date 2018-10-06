@@ -16,6 +16,7 @@ application {
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
+    implementation("io.github.microutils:kotlin-logging:1.6.10")
     implementation("org.slf4j:slf4j-simple:1.7.25")
     implementation("com.google.guava:guava:26.0-jre")
 
