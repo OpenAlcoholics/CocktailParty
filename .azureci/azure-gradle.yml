@@ -14,4 +14,4 @@ steps:
     javaHomeOption: 'JDKVersion'
     jdkVersionOption: '1.8'
   env:
-    DB_PASS: $(db_pass_secret)
+    DATABASE_PASS: $(db_pass_secret)

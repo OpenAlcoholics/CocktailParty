@@ -4,8 +4,8 @@ steps:
     scoop update
     scoop install postgresql
     Start-Process pg_ctl start
-    createuser -w -U postgres -d -s $env:DB_USER
-    createdb -w -U $env:DB_USER $env:DB_NAME
+    createuser -w -U postgres -d -s $env:DATABASE_USER
+    createdb -w -U $env:DATABASE_USER $env:DATABASE_NAME
   displayName: Install and run postgresql
   env:
     PGPASSWORD: $(db_pass_secret)

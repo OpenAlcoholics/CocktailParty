@@ -1,5 +1,12 @@
-import io.github.cdimascio.dotenv.Dotenv
-import io.github.cdimascio.dotenv.dotenv
+import com.jdiazcano.cfg4k.loaders.EnvironmentConfigLoader
+import com.jdiazcano.cfg4k.loaders.PropertyConfigLoader
+import com.jdiazcano.cfg4k.providers.ConfigProvider
+import com.jdiazcano.cfg4k.providers.DefaultConfigProvider
+import com.jdiazcano.cfg4k.providers.OverrideConfigProvider
+import com.jdiazcano.cfg4k.providers.getOrNull
+import com.jdiazcano.cfg4k.sources.ClasspathConfigSource
+import com.jdiazcano.cfg4k.sources.FileConfigSource
+import com.jdiazcano.cfg4k.yaml.YamlConfigLoader
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -50,7 +57,8 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath("io.github.cdimascio:java-dotenv:3.1.2")
+        classpath("com.jdiazcano.cfg4k:cfg4k-core:0.9.0")
+        classpath("com.jdiazcano.cfg4k:cfg4k-yaml:0.9.0")
         classpath("org.postgresql:postgresql:42.2.5")
     }
 }
@@ -72,14 +80,50 @@ val dokka by tasks.getting(org.jetbrains.dokka.gradle.DokkaTask::class) {
     outputDirectory = "$buildDir/javadoc"
 }
 
-flyway {
-    /*val dotenv = dotenv {
-        this.directory = "$rootDir/src/main/resources"
+fun configProvider(): ConfigProvider {
+    val envLoader = EnvironmentConfigLoader()
+    val envProvider = DefaultConfigProvider(envLoader)
+
+    val file = File("config.yaml")
+    val fileProvider = if (!file.isFile) {
+        null
+    } else {
+        val fileSource = FileConfigSource(file)
+        val fileLoader = YamlConfigLoader(fileSource)
+        DefaultConfigProvider(fileLoader)
     }
-    url = "jdbc:postgresql://${dotenv["DB_HOST"]}:${dotenv["DB_PORT"]}/${dotenv["DB_NAME"]}"
-    user = dotenv["DB_USER"]
-    password = dotenv["DB_PASS"]
-    locations = arrayOf("filesystem:src/main/resources/migration/sql")*/
+
+    val defaultFile = File("$rootDir/src/main/resources/defaultConfig.properties")
+    val defaultSource = FileConfigSource(defaultFile)
+    val defaultLoader = PropertyConfigLoader(defaultSource)
+    val defaultProvider = DefaultConfigProvider(defaultLoader)
+
+    return if (fileProvider == null) {
+        OverrideConfigProvider(envProvider, defaultProvider)
+    } else {
+        OverrideConfigProvider(envProvider, fileProvider, defaultProvider)
+    }
+}
+
+flyway {
+    val config = configProvider()
+    val host = config.getOrNull<String>("database.host")
+    val port = config.getOrNull<Int>("database.port")
+    val name = config.getOrNull<String>("database.name")
+    val user = config.getOrNull<String>("database.user")
+    val pass = config.getOrNull<String>("database.pass")
+    if (host == null
+        || port == null
+        || name == null
+        || user == null
+        || pass == null) {
+        System.err.println("database unconfigured")
+    } else {
+        url = "jdbc:postgresql://$host:$port/$name"
+        this.user = user
+        password = pass
+        locations = arrayOf("filesystem:src/main/resources/migration/sql")
+    }
 }
 
 idea {

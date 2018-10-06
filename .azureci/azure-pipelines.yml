@@ -15,8 +15,8 @@ jobs:
       runInBackground: true
       imageName: postgres:10.5-alpine
       envVars: |
-        POSTGRES_DB=$(db_name)
-        POSTGRES_USER=$(db_user)
+        POSTGRES_DB=$(DATABASE_NAME)
+        POSTGRES_USER=$(DATABASE_USER)
         POSTGRES_PASSWORD=$(db_pass_secret)
   - template: azure-gradle.yml
     parameters:
