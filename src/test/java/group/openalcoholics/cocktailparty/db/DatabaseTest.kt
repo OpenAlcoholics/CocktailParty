@@ -1,6 +1,6 @@
 package group.openalcoholics.cocktailparty.db
 
-import group.openalcoholics.cocktailparty.TestConfigModule
+import group.openalcoholics.cocktailparty.module.ConfigModule
 import group.openalcoholics.cocktailparty.module.DatabaseModule
 import name.falgout.jeffrey.testing.junit.guice.GuiceExtension
 import name.falgout.jeffrey.testing.junit.guice.IncludeModule
@@ -11,7 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import javax.sql.DataSource
 
 @ExtendWith(GuiceExtension::class)
-@IncludeModules(IncludeModule(TestConfigModule::class), IncludeModule(DatabaseModule::class))
+@IncludeModules(IncludeModule(ConfigModule::class), IncludeModule(DatabaseModule::class))
 interface DatabaseTest {
 
     @BeforeEach
