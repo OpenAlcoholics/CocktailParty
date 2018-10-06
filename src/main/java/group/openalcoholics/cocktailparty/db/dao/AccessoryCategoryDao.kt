@@ -38,9 +38,9 @@ interface AccessoryCategoryDao : SqlObject, BaseDao<AccessoryCategory> {
 
     fun search(query: String): List<AccessoryCategory> = handle
         .createQuery("""
-                SELECT * FROM $TABLE_NAME
-                WHERE LOWER(name) LIKE LOWER(CONCAT(\'%\', :q, \'%\'))
-            """)
+            SELECT * FROM $TABLE_NAME
+            WHERE LOWER(name) LIKE LOWER(CONCAT(\'%\', :q, \'%\'))
+        """)
         .bind("q", query)
         .mapTo(AccessoryCategory::class.java)
         .list()

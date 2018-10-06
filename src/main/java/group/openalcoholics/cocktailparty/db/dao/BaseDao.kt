@@ -21,5 +21,5 @@ interface BaseDaoCompanion {
     val columns: List<String>
     val tableName: String
     fun head(prefix: String, tableQualifier: String = "$tableName."): String =
-            columns.joinToString { """$tableQualifier$it AS "$prefix$it"""" }
+        columns.joinToString { """$tableQualifier$it AS "$prefix$it"""" }
 }

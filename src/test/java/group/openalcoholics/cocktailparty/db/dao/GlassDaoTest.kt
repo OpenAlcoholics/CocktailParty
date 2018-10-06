@@ -18,10 +18,10 @@ class GlassDaoTest @Inject constructor(private val jdbi: Jdbi) : BaseDaoTest<Gla
     }
 
     override fun modifiedVersions(entity: Glass): Sequence<Glass> = sequenceOf(
-            entity.copy(name = entity.name + "Mod"),
-            entity.copy(estimatedSize = entity.estimatedSize + 1),
-            entity.copy(imageLink = entity.imageLink + "Mod"),
-            entity.copy(imageLink = null)
+        entity.copy(name = entity.name + "Mod"),
+        entity.copy(estimatedSize = entity.estimatedSize + 1),
+        entity.copy(imageLink = entity.imageLink + "Mod"),
+        entity.copy(imageLink = null)
     )
 
     override fun find(id: Int): Glass? = jdbi.withExtensionUnchecked(GlassDao::class) {
@@ -42,23 +42,23 @@ class GlassDaoTest @Inject constructor(private val jdbi: Jdbi) : BaseDaoTest<Gla
 
     @TestFactory
     fun searchKnown(): Stream<DynamicTest> = sequenceOf("", "h", "H", "l", "L", "hBa", "highball")
-            .map { query ->
-                dynamicTest("""Search for "$query"""") {
-                    val result = jdbi.withExtensionUnchecked(GlassDao::class) {
-                        it.search(query)
-                    }
-                    assertEquals(1, result.size)
+        .map { query ->
+            dynamicTest("""Search for "$query"""") {
+                val result = jdbi.withExtensionUnchecked(GlassDao::class) {
+                    it.search(query)
                 }
-            }.asStream()
+                assertEquals(1, result.size)
+            }
+        }.asStream()
 
     @TestFactory
     fun searchUnknown(): Stream<DynamicTest> = sequenceOf("*", "moin", "k")
-            .map { query ->
-                dynamicTest("""Search for "$query"""") {
-                    val result = jdbi.withExtensionUnchecked(GlassDao::class) {
-                        it.search(query)
-                    }
-                    assertEquals(emptyList(), result)
+        .map { query ->
+            dynamicTest("""Search for "$query"""") {
+                val result = jdbi.withExtensionUnchecked(GlassDao::class) {
+                    it.search(query)
                 }
-            }.asStream()
+                assertEquals(emptyList(), result)
+            }
+        }.asStream()
 }

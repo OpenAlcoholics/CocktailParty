@@ -79,27 +79,27 @@ interface CocktailDao : SqlObject, BaseDao<Cocktail> {
 
     fun search(query: String?, category: Int?): List<Cocktail> = handle
         .createQuery("""
-                SELECT $LOCAL_HEAD,
-                    ${CocktailCategoryDao.head("${CocktailCategoryDao.TABLE_NAME}.")},
-                    ${GlassDao.head("${GlassDao.TABLE_NAME}.")},
-                    ${CocktailIngredientDao.head("${CocktailIngredientDao.TABLE_NAME}.")},
-                    ${CocktailAccessoryDao.head("${CocktailAccessoryDao.TABLE_NAME}.")}
-                FROM (SELECT *
-                    FROM $TABLE_NAME
-                    WHERE (TRUE
-                    ${if (query == null) "" else "AND LOWER($TABLE_NAME.name) LIKE LOWER(CONCAT(\'%\', :q, \'%\'))"}
-                    ${if (category == null) "" else "AND $TABLE_NAME.category_id = :category"}
-                    )
-                ) AS $TABLE_NAME
-                INNER JOIN ${CocktailCategoryDao.TABLE_NAME}
-                    ON ${CocktailCategoryDao.TABLE_NAME}.id = $TABLE_NAME.category_id
-                INNER JOIN ${GlassDao.TABLE_NAME}
-                    ON ${GlassDao.TABLE_NAME}.id = $TABLE_NAME.glass_id
-                LEFT JOIN ${CocktailIngredientDao.TABLE_NAME}
-                    ON ${CocktailIngredientDao.TABLE_NAME}.drink_id = $TABLE_NAME.id
-                LEFT JOIN ${CocktailAccessoryDao.TABLE_NAME}
-                    ON ${CocktailAccessoryDao.TABLE_NAME}.drink_id = $TABLE_NAME.id
-            """).apply {
+            SELECT $LOCAL_HEAD,
+                ${CocktailCategoryDao.head("${CocktailCategoryDao.TABLE_NAME}.")},
+                ${GlassDao.head("${GlassDao.TABLE_NAME}.")},
+                ${CocktailIngredientDao.head("${CocktailIngredientDao.TABLE_NAME}.")},
+                ${CocktailAccessoryDao.head("${CocktailAccessoryDao.TABLE_NAME}.")}
+            FROM (SELECT *
+                FROM $TABLE_NAME
+                WHERE (TRUE
+                ${if (query == null) "" else "AND LOWER($TABLE_NAME.name) LIKE LOWER(CONCAT(\'%\', :q, \'%\'))"}
+                ${if (category == null) "" else "AND $TABLE_NAME.category_id = :category"}
+                )
+            ) AS $TABLE_NAME
+            INNER JOIN ${CocktailCategoryDao.TABLE_NAME}
+                ON ${CocktailCategoryDao.TABLE_NAME}.id = $TABLE_NAME.category_id
+            INNER JOIN ${GlassDao.TABLE_NAME}
+                ON ${GlassDao.TABLE_NAME}.id = $TABLE_NAME.glass_id
+            LEFT JOIN ${CocktailIngredientDao.TABLE_NAME}
+                ON ${CocktailIngredientDao.TABLE_NAME}.drink_id = $TABLE_NAME.id
+            LEFT JOIN ${CocktailAccessoryDao.TABLE_NAME}
+                ON ${CocktailAccessoryDao.TABLE_NAME}.drink_id = $TABLE_NAME.id
+        """).apply {
             if (query != null) bind("q", query)
             if (category != null) bind("category", category)
         }

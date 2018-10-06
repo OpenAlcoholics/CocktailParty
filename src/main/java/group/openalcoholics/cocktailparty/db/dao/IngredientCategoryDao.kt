@@ -38,13 +38,13 @@ interface IngredientCategoryDao : SqlObject, BaseDao<IngredientCategory> {
     override fun delete(id: Int)
 
     fun search(query: String): List<IngredientCategory> = handle
-            .createQuery("""
-                SELECT * FROM $TABLE_NAME
-                WHERE LOWER(name) LIKE LOWER(CONCAT(\'%\', :q, \'%\'))
-            """)
-            .bind("q", query)
-            .mapTo(IngredientCategory::class.java)
-            .list()
+        .createQuery("""
+            SELECT * FROM $TABLE_NAME
+            WHERE LOWER(name) LIKE LOWER(CONCAT(\'%\', :q, \'%\'))
+        """)
+        .bind("q", query)
+        .mapTo(IngredientCategory::class.java)
+        .list()
 
     companion object : BaseDaoCompanion {
         const val TABLE_NAME = "ingredient_categories"

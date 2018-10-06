@@ -11,19 +11,21 @@ import java.util.stream.Stream
 import kotlin.streams.asStream
 import kotlin.test.assertEquals
 
-class CocktailCategoryDaoTest @Inject constructor(private val jdbi: Jdbi) : BaseDaoTest<CocktailCategory> {
+class CocktailCategoryDaoTest @Inject constructor(private val jdbi: Jdbi) :
+    BaseDaoTest<CocktailCategory> {
+
     override fun create(id: Int): CocktailCategory = CocktailCategory(
-            id,
-            "name$id",
-            "desc$id",
-            "image$id"
+        id,
+        "name$id",
+        "desc$id",
+        "image$id"
     )
 
     override fun modifiedVersions(entity: CocktailCategory) = sequenceOf(
-            entity.copy(name = entity.name + "Mod"),
-            entity.copy(description = entity.description + "Mod"),
-            entity.copy(imageLink = entity.imageLink + "Mod"),
-            entity.copy(imageLink = null)
+        entity.copy(name = entity.name + "Mod"),
+        entity.copy(description = entity.description + "Mod"),
+        entity.copy(imageLink = entity.imageLink + "Mod"),
+        entity.copy(imageLink = null)
     )
 
     override fun find(id: Int): CocktailCategory? = jdbi.withExtensionUnchecked(CocktailCategoryDao::class) {
@@ -42,27 +44,26 @@ class CocktailCategoryDaoTest @Inject constructor(private val jdbi: Jdbi) : Base
         it.find(id)
     }
 
-
     @TestFactory
     fun searchKnown(): Stream<DynamicTest> = sequenceOf(
-            "" to 2, "high" to 1, "ghba" to 1, "ou" to 1, "s" to 2)
-            .map { (query, count) ->
-                DynamicTest.dynamicTest("""Search for "$query"""") {
-                    val result = jdbi.withExtensionUnchecked(CocktailCategoryDao::class) {
-                        it.search(query)
-                    }
-                    assertEquals(count, result.size)
+        "" to 2, "high" to 1, "ghba" to 1, "ou" to 1, "s" to 2)
+        .map { (query, count) ->
+            DynamicTest.dynamicTest("""Search for "$query"""") {
+                val result = jdbi.withExtensionUnchecked(CocktailCategoryDao::class) {
+                    it.search(query)
                 }
-            }.asStream()
+                assertEquals(count, result.size)
+            }
+        }.asStream()
 
     @TestFactory
     fun searchUnknown(): Stream<DynamicTest> = sequenceOf("*", "moin")
-            .map { query ->
-                DynamicTest.dynamicTest("""Search for "$query"""") {
-                    val result = jdbi.withExtensionUnchecked(CocktailCategoryDao::class) {
-                        it.search(query)
-                    }
-                    assertEquals(emptyList(), result)
+        .map { query ->
+            DynamicTest.dynamicTest("""Search for "$query"""") {
+                val result = jdbi.withExtensionUnchecked(CocktailCategoryDao::class) {
+                    it.search(query)
                 }
-            }.asStream()
+                assertEquals(emptyList(), result)
+            }
+        }.asStream()
 }
