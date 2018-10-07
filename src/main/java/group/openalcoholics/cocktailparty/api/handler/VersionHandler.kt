@@ -2,8 +2,8 @@ package group.openalcoholics.cocktailparty.api.handler
 
 import group.openalcoholics.cocktailparty.api.HandlerController
 import group.openalcoholics.cocktailparty.api.encodeJson
-import group.openalcoholics.cocktailparty.models.ImplementationInfo
-import group.openalcoholics.cocktailparty.models.Version
+import group.openalcoholics.cocktailparty.model.ImplementationInfo
+import group.openalcoholics.cocktailparty.model.Version
 import io.vertx.ext.web.RoutingContext
 import io.vertx.ext.web.api.contract.openapi3.OpenAPI3RouterFactory
 

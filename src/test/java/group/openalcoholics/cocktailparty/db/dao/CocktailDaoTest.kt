@@ -1,9 +1,9 @@
 package group.openalcoholics.cocktailparty.db.dao
 
 import com.google.inject.Inject
-import group.openalcoholics.cocktailparty.models.Cocktail
-import group.openalcoholics.cocktailparty.models.CocktailAccessory
-import group.openalcoholics.cocktailparty.models.CocktailIngredient
+import group.openalcoholics.cocktailparty.model.Cocktail
+import group.openalcoholics.cocktailparty.model.CocktailAccessory
+import group.openalcoholics.cocktailparty.model.CocktailIngredient
 import io.vertx.core.json.Json
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.useExtensionUnchecked

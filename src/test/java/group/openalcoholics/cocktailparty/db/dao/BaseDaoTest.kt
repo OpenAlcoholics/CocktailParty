@@ -1,7 +1,7 @@
 package group.openalcoholics.cocktailparty.db.dao
 
 import group.openalcoholics.cocktailparty.db.DatabaseTest
-import group.openalcoholics.cocktailparty.models.BaseModel
+import group.openalcoholics.cocktailparty.model.BaseModel
 import org.jdbi.v3.core.Jdbi
 import org.junit.jupiter.api.DynamicTest
 import org.junit.jupiter.api.DynamicTest.dynamicTest

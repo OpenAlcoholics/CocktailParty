@@ -9,7 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-package group.openalcoholics.cocktailparty.models
+package group.openalcoholics.cocktailparty.model
 
 /**
  * A type of cocktail glass.

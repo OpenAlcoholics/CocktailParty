@@ -9,7 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-package group.openalcoholics.cocktailparty.models
+package group.openalcoholics.cocktailparty.model
 
 import group.openalcoholics.cocktailparty.db.dao.IngredientCategoryDao
 import org.jdbi.v3.core.mapper.Nested

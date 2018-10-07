@@ -7,7 +7,7 @@ import group.openalcoholics.cocktailparty.api.fail
 import group.openalcoholics.cocktailparty.api.pathId
 import group.openalcoholics.cocktailparty.api.setStatus
 import group.openalcoholics.cocktailparty.db.dao.BaseDao
-import group.openalcoholics.cocktailparty.models.BaseModel
+import group.openalcoholics.cocktailparty.model.BaseModel
 import io.vertx.ext.web.RoutingContext
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.useExtensionUnchecked

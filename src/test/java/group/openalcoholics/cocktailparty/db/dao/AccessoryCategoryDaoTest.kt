@@ -1,7 +1,7 @@
 package group.openalcoholics.cocktailparty.db.dao
 
 import com.google.inject.Inject
-import group.openalcoholics.cocktailparty.models.AccessoryCategory
+import group.openalcoholics.cocktailparty.model.AccessoryCategory
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.useExtensionUnchecked
 import org.jdbi.v3.core.kotlin.withExtensionUnchecked

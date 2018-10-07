@@ -1,6 +1,6 @@
 package group.openalcoholics.cocktailparty.db.dao
 
-import group.openalcoholics.cocktailparty.models.CocktailAccessory
+import group.openalcoholics.cocktailparty.model.CocktailAccessory
 import org.jdbi.v3.sqlobject.SqlObject
 import org.jdbi.v3.sqlobject.statement.SqlUpdate
 

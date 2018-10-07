@@ -1,4 +1,4 @@
-package group.openalcoholics.cocktailparty.models
+package group.openalcoholics.cocktailparty.model
 
 import org.jdbi.v3.core.mapper.reflect.ColumnName
 

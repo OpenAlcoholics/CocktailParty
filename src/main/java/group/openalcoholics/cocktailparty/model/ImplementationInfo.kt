@@ -9,7 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-package group.openalcoholics.cocktailparty.models
+package group.openalcoholics.cocktailparty.model
 
 /**
  * Information about the implementation serving the API.

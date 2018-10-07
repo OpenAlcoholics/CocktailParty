@@ -3,7 +3,7 @@ package group.openalcoholics.cocktailparty.api.handler
 import group.openalcoholics.cocktailparty.api.HandlerController
 import group.openalcoholics.cocktailparty.api.end
 import group.openalcoholics.cocktailparty.db.dao.IngredientCategoryDao
-import group.openalcoholics.cocktailparty.models.IngredientCategory
+import group.openalcoholics.cocktailparty.model.IngredientCategory
 import io.vertx.ext.web.RoutingContext
 import io.vertx.ext.web.api.contract.openapi3.OpenAPI3RouterFactory
 import org.jdbi.v3.core.Jdbi

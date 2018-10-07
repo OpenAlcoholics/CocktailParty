@@ -1,4 +1,4 @@
-package group.openalcoholics.cocktailparty.models
+package group.openalcoholics.cocktailparty.model
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 

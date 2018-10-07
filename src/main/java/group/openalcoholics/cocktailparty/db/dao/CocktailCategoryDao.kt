@@ -1,6 +1,6 @@
 package group.openalcoholics.cocktailparty.db.dao
 
-import group.openalcoholics.cocktailparty.models.CocktailCategory
+import group.openalcoholics.cocktailparty.model.CocktailCategory
 import org.jdbi.v3.sqlobject.SqlObject
 import org.jdbi.v3.sqlobject.statement.GetGeneratedKeys
 import org.jdbi.v3.sqlobject.statement.SqlQuery

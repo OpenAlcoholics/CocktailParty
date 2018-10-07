@@ -9,7 +9,7 @@ import group.openalcoholics.cocktailparty.api.setStatus
 import group.openalcoholics.cocktailparty.db.dao.CocktailAccessoryDao
 import group.openalcoholics.cocktailparty.db.dao.CocktailDao
 import group.openalcoholics.cocktailparty.db.dao.CocktailIngredientDao
-import group.openalcoholics.cocktailparty.models.Cocktail
+import group.openalcoholics.cocktailparty.model.Cocktail
 import io.vertx.ext.web.RoutingContext
 import io.vertx.ext.web.api.contract.openapi3.OpenAPI3RouterFactory
 import org.jdbi.v3.core.Jdbi
