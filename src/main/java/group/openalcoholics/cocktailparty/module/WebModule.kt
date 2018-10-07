@@ -25,6 +25,10 @@ class WebModule : AbstractModule() {
 
     @Provides
     @Singleton
+    fun provideAuthConfig(provider: ConfigProvider) = provider.bind<AuthConfig>("auth")
+
+    @Provides
+    @Singleton
     fun provideVersionHandler() = VersionHandler()
 
     @Provides
@@ -51,4 +55,9 @@ class WebModule : AbstractModule() {
 interface ApiConfig {
     val host: String
     val port: Int
+}
+
+interface AuthConfig {
+    val publicKey: String
+    val algorithm: String
 }

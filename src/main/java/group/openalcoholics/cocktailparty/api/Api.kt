@@ -9,16 +9,23 @@ import group.openalcoholics.cocktailparty.api.handler.IngredientCategoryHandler
 import group.openalcoholics.cocktailparty.api.handler.IngredientHandler
 import group.openalcoholics.cocktailparty.api.handler.VersionHandler
 import group.openalcoholics.cocktailparty.module.ApiConfig
+import group.openalcoholics.cocktailparty.module.AuthConfig
 import io.vertx.core.AbstractVerticle
 import io.vertx.core.Future
 import io.vertx.core.http.HttpServerOptions
 import io.vertx.core.json.Json
+import io.vertx.ext.auth.jwt.JWTAuth
 import io.vertx.ext.web.api.contract.openapi3.OpenAPI3RouterFactory
+import io.vertx.kotlin.core.json.json
+import io.vertx.kotlin.core.json.obj
+import io.vertx.kotlin.ext.auth.PubSecKeyOptions
+import io.vertx.kotlin.ext.auth.jwt.JWTAuthOptions
 import io.vertx.kotlin.ext.web.api.contract.RouterFactoryOptions
 import mu.KotlinLogging
 
 class Api @Inject constructor(
     private val apiConfig: ApiConfig,
+    private val authConfig: AuthConfig,
     private val versionHandler: VersionHandler,
     private val glassHandler: GlassHandler,
     private val ingredientCategoryHandler: IngredientCategoryHandler,
@@ -55,22 +62,28 @@ class Api @Inject constructor(
                     .register(cocktailCategoryHandler)
                     .register(cocktailHandler)
 
-                logger.info("Registered")
-
-                /*
                 val jwtOptions = JWTAuthOptions(
-                    keyStore = KeyStoreOptions(
-                        path = "",
-                        password = ""
-                    ))
-                */
+                    pubSecKeys = listOf(PubSecKeyOptions(
+                        algorithm = authConfig.algorithm,
+                        publicKey = authConfig.publicKey)))
+                val jwtAuth = JWTAuth.create(vertx, jwtOptions)!!
 
                 routerFactory.addSecurityHandler("Token") { ctx ->
                     val rawToken: String? = ctx.request().getHeader("Authorization")
-                    if (rawToken.isNullOrBlank()) ctx.fail(Status.UNAUTHORIZED)
+                    if (rawToken == null
+                        || !rawToken.startsWith("Bearer ")) ctx.fail(Status.UNAUTHORIZED)
                     else {
-                        // TODO check api key
-                        ctx.next()
+                        val token = rawToken.substring("Bearer ".length)
+                        jwtAuth.authenticate(json {
+                            obj("jwt" to token)
+                        }) { result ->
+                            if (result.succeeded()) {
+                                ctx.setUser(result.result())
+                                ctx.next()
+                            } else {
+                                ctx.fail(Status.UNAUTHORIZED)
+                            }
+                        }
                     }
                 }
 

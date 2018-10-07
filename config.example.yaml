@@ -17,3 +17,8 @@ api:
   host: 0.0.0.0
   # The port to serve the API on
   port: 8080
+
+auth:
+  # Base64 encoded public key in the PEM format to authenticate JWTs
+  publicKey:
+  algorithm: RS256
