@@ -14,7 +14,7 @@ import io.vertx.kotlin.core.json.obj
 import mu.KotlinLogging
 
 class Launcher : AbstractVerticle() {
-    val logger = KotlinLogging.logger { }
+    private val logger = KotlinLogging.logger { }
 
     override fun start(done: Future<Void>) {
         // TODO deployment opts
