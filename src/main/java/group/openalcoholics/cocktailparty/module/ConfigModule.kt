@@ -15,7 +15,7 @@ import com.jdiazcano.cfg4k.yaml.YamlConfigLoader
 import mu.KotlinLogging
 import java.io.File
 
-class ConfigModule : AbstractModule() {
+open class AbstractConfigModule(private val configFile: String) : AbstractModule() {
     private val logger = KotlinLogging.logger { }
 
     override fun configure() {
@@ -28,9 +28,9 @@ class ConfigModule : AbstractModule() {
         val defaultsLoader = PropertyConfigLoader(defaultsSource)
         val defaultsProvider = DefaultConfigProvider(defaultsLoader)
 
-        val file = File("config.yaml")
+        val file = File(configFile)
         val fileProvider = if (!file.isFile) {
-            logger.warn { "Could not find config file 'config.yaml'" }
+            logger.warn { "Could not find config file '$configFile'" }
             null
         } else {
             val fileSource = FileConfigSource(file)
@@ -49,3 +49,5 @@ class ConfigModule : AbstractModule() {
         return CachedConfigProvider(combinedProvider)
     }
 }
+
+class ConfigModule : AbstractConfigModule("config.yaml")
