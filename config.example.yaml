@@ -21,4 +21,4 @@ api:
 auth:
   # Base64 encoded public key in the PEM format to authenticate JWTs
   publicKey:
-  algorithm: HS256
+  algorithm: RS256
