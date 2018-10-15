@@ -3,7 +3,8 @@ steps:
     iex (new-object net.webclient).downloadstring('https://get.scoop.sh')
     scoop update
     scoop install postgresql
-    Start-Process pg_ctl start -w
+    Start-Process pg_ctl start
+    Start-Sleep -Seconds 5
     createuser -w -U postgres -d -s $env:DATABASE_USER
     createdb -w -U $env:DATABASE_USER $env:DATABASE_NAME
   displayName: Install and run postgresql
