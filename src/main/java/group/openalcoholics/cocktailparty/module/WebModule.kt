@@ -59,5 +59,5 @@ interface ApiConfig {
 
 interface AuthConfig {
     val publicKey: String
-    val algorithm: String
+    val sha: Int
 }

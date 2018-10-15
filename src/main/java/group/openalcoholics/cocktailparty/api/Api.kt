@@ -62,9 +62,13 @@ class Api @Inject constructor(
                     .register(cocktailCategoryHandler)
                     .register(cocktailHandler)
 
+                val sha = authConfig.sha
+                if (sha !in listOf(256, 384, 512))
+                    throw ApiInitializationException("auth.sha must be one of [256, 384, 512]")
+
                 val jwtOptions = JWTAuthOptions(
                     pubSecKeys = listOf(PubSecKeyOptions(
-                        algorithm = authConfig.algorithm,
+                        algorithm = "RS$sha",
                         publicKey = authConfig.publicKey)))
                 val jwtAuth = JWTAuth.create(vertx, jwtOptions)!!
 
@@ -105,4 +109,8 @@ class Api @Inject constructor(
     }
 }
 
-class ApiInitializationException(cause: Throwable) : RuntimeException(cause)
+class ApiInitializationException : RuntimeException {
+    constructor(message: String) : super(message)
+    constructor(cause: Throwable) : super(cause)
+    constructor(message: String, cause: Throwable) : super(message, cause)
+}

@@ -38,3 +38,22 @@ database:
   host: localhost
 ```
 is `DATABASE_HOST=localhost`.
+
+## Generating a key-pair
+To generate a key-pair for the JWT tokens, execute the following command:
+```
+keytool -genkey -keystore keystore.pfx -storetype pkcs12 -storepass secret -keyalg RSA -keysize 2048 -alias RS256 -keypass secret -sigalg SHA256withRSA -dname "CN=,OU=,O=,L=,ST=,C=" -validity 360
+```
+
+You can export the certificate from the keystore with:
+```
+keytool -exportcert -rfc -keystore .\keystore.pfx -alias RS256 > client.crt
+```
+
+Then you can extract the public key by:
+```
+openssl x509 -inform pem -in client.crt -pubkey -noout
+```
+
+The result, without the header and footer, can be used as your `publicKey` in the `auth` section
+of the config file.

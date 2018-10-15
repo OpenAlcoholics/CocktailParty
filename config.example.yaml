@@ -19,6 +19,7 @@ api:
   port: 8080
 
 auth:
-  # Base64 encoded public key in the PEM format to authenticate JWTs
+  # Base64 encoded public RSA key in the PEM format to authenticate JWTs
   publicKey:
-  algorithm: RS256
+  # Whether to use sha-256, sha-384 or sha-512
+  sha: 256
