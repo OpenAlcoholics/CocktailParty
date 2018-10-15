@@ -18,7 +18,7 @@ interface DatabaseTest {
   fun clean(dataSource: DataSource) {
     val flyway = Flyway()
     flyway.dataSource = dataSource
-    flyway.setLocations("migration/sql")
+    flyway.setLocations("openapi/sql")
     flyway.clean()
     flyway.migrate()
   }

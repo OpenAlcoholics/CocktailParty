@@ -122,7 +122,7 @@ flyway {
         url = "jdbc:postgresql://$host:$port/$name"
         this.user = user
         password = pass
-        locations = arrayOf("filesystem:src/main/resources/migration/sql")
+        locations = arrayOf("filesystem:src/main/resources/openapi/sql")
     }
 }
 
