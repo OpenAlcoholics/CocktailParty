@@ -14,12 +14,13 @@ import javax.sql.DataSource
 @IncludeModules(IncludeModule(TestConfigModule::class), IncludeModule(DatabaseModule::class))
 interface DatabaseTest {
 
-  @BeforeEach
-  fun clean(dataSource: DataSource) {
-    val flyway = Flyway()
-    flyway.dataSource = dataSource
-    flyway.setLocations("openapi/sql")
-    flyway.clean()
-    flyway.migrate()
-  }
+    @BeforeEach
+    fun clean(dataSource: DataSource) {
+        val flyway = Flyway.configure()
+            .dataSource(dataSource)
+            .locations("openapi/sql")
+            .load()!!
+        flyway.clean()
+        flyway.migrate()
+    }
 }
