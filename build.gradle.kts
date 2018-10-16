@@ -32,7 +32,9 @@ dependencies {
     implementation("com.jdiazcano.cfg4k:cfg4k-yaml:0.9.0")
 
     implementation("io.vertx:vertx-web-api-contract:3.5.3")
-    implementation("io.vertx:vertx-lang-kotlin:3.5.3")
+    implementation("io.vertx:vertx-lang-kotlin:3.5.3") {
+        exclude(group = "org.jetbrains.kotlin")
+    }
     implementation("io.vertx:vertx-rx-java2:3.5.3")
     implementation("io.vertx:vertx-auth-jwt:3.5.3")
     implementation("io.reactivex.rxjava2:rxkotlin:2.2.0")
