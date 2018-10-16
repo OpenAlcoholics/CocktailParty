@@ -11,11 +11,11 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     application
-    kotlin("jvm") version "1.2.70"
-    id("org.jetbrains.dokka") version "0.9.17"
+    kotlin("jvm") version Version.kotlin
+    id("org.jetbrains.dokka") version Version.dokka
     idea
 
-    id("org.flywaydb.flyway") version "5.1.4"
+    id("org.flywaydb.flyway") version Version.flyway
 }
 
 application {
@@ -23,33 +23,54 @@ application {
 }
 
 dependencies {
+    // Basics
     implementation(kotlin("stdlib-jdk8"))
-    implementation("io.github.microutils:kotlin-logging:1.6.10")
-    implementation("org.slf4j:slf4j-simple:1.7.25")
-    implementation("com.google.guava:guava:26.0-jre")
+    implementation(
+        group = "io.github.microutils",
+        name = "kotlin-logging",
+        version = Version.kotlinLogging)
+    implementation(group = "org.slf4j", name = "slf4j-simple", version = Version.slf4j)
+    implementation(group = "com.google.guava", name = "guava", version = Version.guava)
 
-    implementation("com.jdiazcano.cfg4k:cfg4k-core:0.9.0")
-    implementation("com.jdiazcano.cfg4k:cfg4k-yaml:0.9.0")
+    // Config
+    implementation(group = "com.jdiazcano.cfg4k", name = "cfg4k-core", version = Version.cfg4k)
+    implementation(group = "com.jdiazcano.cfg4k", name = "cfg4k-yaml", version = Version.cfg4k)
 
-    implementation("io.vertx:vertx-web-api-contract:3.5.3")
-    implementation("io.vertx:vertx-lang-kotlin:3.5.3") {
+    // Vertx
+    implementation(group = "io.vertx", name = "vertx-web-api-contract", version = Version.vertx)
+    implementation(group = "io.vertx", name = "vertx-lang-kotlin", version = Version.vertx) {
         exclude(group = "org.jetbrains.kotlin")
     }
-    implementation("io.vertx:vertx-auth-jwt:3.5.3")
-    implementation("com.englishtown.vertx:vertx-guice:2.3.1")
+    implementation(group = "io.vertx", name = "vertx-auth-jwt", version = Version.vertx)
+    implementation(group = "com.englishtown.vertx", name = "vertx-guice",
+        version = Version.vertxGuice)
 
-    implementation(group = "org.flywaydb", name = "flyway-core", version = "5.1.4")
-    implementation("org.jdbi:jdbi3-core:3.3.0")
-    implementation("org.jdbi:jdbi3-kotlin:3.3.0")
-    implementation("org.jdbi:jdbi3-postgres:3.3.0")
-    implementation("org.jdbi:jdbi3-kotlin-sqlobject:3.3.0")
-    implementation("com.zaxxer:HikariCP:3.2.0")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.9.+")
+    // Database
+    implementation(group = "org.flywaydb", name = "flyway-core", version = Version.flyway)
+    implementation(group = "org.jdbi", name = "jdbi3-core", version = Version.jdbi)
+    implementation(group = "org.jdbi", name = "jdbi3-kotlin", version = Version.jdbi)
+    implementation(group = "org.jdbi", name = "jdbi3-postgres", version = Version.jdbi)
+    implementation(group = "org.jdbi", name = "jdbi3-kotlin-sqlobject", version = Version.jdbi)
+    implementation(group = "com.zaxxer", name = "HikariCP", version = Version.hikariCp)
+    implementation(
+        group = "com.fasterxml.jackson.module",
+        name = "jackson-module-kotlin",
+        version = Version.jackson)
 
-    testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-api", version = "5.3.1")
-    testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-engine", version = "5.3.1")
+    // Testing
+    testImplementation(
+        group = "org.junit.jupiter",
+        name = "junit-jupiter-api",
+        version = Version.junit)
+    testImplementation(
+        group = "org.junit.jupiter",
+        name = "junit-jupiter-engine",
+        version = Version.junit)
     testImplementation(kotlin("test-junit5"))
-    testImplementation(group = "name.falgout.jeffrey.testing.junit5", name = "guice-extension", version = "1.0.2")
+    testImplementation(
+        group = "name.falgout.jeffrey.testing.junit5",
+        name = "guice-extension",
+        version = Version.junitGuice)
 }
 
 buildscript {
@@ -57,9 +78,9 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath("com.jdiazcano.cfg4k:cfg4k-core:0.9.0")
-        classpath("com.jdiazcano.cfg4k:cfg4k-yaml:0.9.0")
-        classpath("org.postgresql:postgresql:42.2.5")
+        classpath(group = "com.jdiazcano.cfg4k", name = "cfg4k-core", version = Version.cfg4k)
+        classpath(group = "com.jdiazcano.cfg4k", name = "cfg4k-yaml", version = Version.cfg4k)
+        classpath(group = "org.postgresql", name = "postgresql", version = Version.postgresql)
     }
 }
 
