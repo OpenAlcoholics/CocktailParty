@@ -35,9 +35,7 @@ dependencies {
     implementation("io.vertx:vertx-lang-kotlin:3.5.3") {
         exclude(group = "org.jetbrains.kotlin")
     }
-    implementation("io.vertx:vertx-rx-java2:3.5.3")
     implementation("io.vertx:vertx-auth-jwt:3.5.3")
-    implementation("io.reactivex.rxjava2:rxkotlin:2.2.0")
     implementation("com.englishtown.vertx:vertx-guice:2.3.1")
 
     implementation(group = "org.flywaydb", name = "flyway-core", version = "5.1.4")
