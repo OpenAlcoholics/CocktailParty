@@ -48,7 +48,7 @@ dependencies {
 
     testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-api", version = "5.3.1")
     testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-engine", version = "5.3.1")
-    testImplementation(kotlin("test-junit5", "1.2.70"))
+    testImplementation(kotlin("test-junit5"))
     testImplementation(group = "name.falgout.jeffrey.testing.junit5", name = "guice-extension", version = "1.0.2")
 }
 
