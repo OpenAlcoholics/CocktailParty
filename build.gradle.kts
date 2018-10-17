@@ -11,11 +11,11 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     application
-    kotlin("jvm") version Version.kotlin
-    id("org.jetbrains.dokka") version Version.dokka
+    kotlin("jvm") version Version.KOTLIN
+    id("org.jetbrains.dokka") version Version.DOKKA
     idea
 
-    id("org.flywaydb.flyway") version Version.flyway
+    id("org.flywaydb.flyway") version Version.FLYWAY
 }
 
 application {
@@ -28,52 +28,52 @@ dependencies {
     implementation(
         group = "io.github.microutils",
         name = "kotlin-logging",
-        version = Version.kotlinLogging)
-    implementation(group = "org.slf4j", name = "slf4j-simple", version = Version.slf4j)
-    implementation(group = "com.google.guava", name = "guava", version = Version.guava)
-    implementation(group = "com.google.inject", name = "guice", version = Version.guice)
+        version = Version.KOTLIN_LOGGING)
+    implementation(group = "org.slf4j", name = "slf4j-simple", version = Version.SLF4J)
+    implementation(group = "com.google.guava", name = "guava", version = Version.GUAVA)
+    implementation(group = "com.google.inject", name = "guice", version = Version.GUICE)
 
     // Config
-    implementation(group = "com.jdiazcano.cfg4k", name = "cfg4k-core", version = Version.cfg4k)
-    implementation(group = "com.jdiazcano.cfg4k", name = "cfg4k-yaml", version = Version.cfg4k)
+    implementation(group = "com.jdiazcano.cfg4k", name = "cfg4k-core", version = Version.CFG4K)
+    implementation(group = "com.jdiazcano.cfg4k", name = "cfg4k-yaml", version = Version.CFG4K)
 
     // Vertx
-    implementation(group = "io.vertx", name = "vertx-web-api-contract", version = Version.vertx)
-    implementation(group = "io.vertx", name = "vertx-lang-kotlin", version = Version.vertx) {
+    implementation(group = "io.vertx", name = "vertx-web-api-contract", version = Version.VERTX)
+    implementation(group = "io.vertx", name = "vertx-lang-kotlin", version = Version.VERTX) {
         exclude(group = "org.jetbrains.kotlin")
     }
-    implementation(group = "io.vertx", name = "vertx-auth-jwt", version = Version.vertx)
+    implementation(group = "io.vertx", name = "vertx-auth-jwt", version = Version.VERTX)
     implementation(
         group = "com.englishtown.vertx",
         name = "vertx-guice",
-        version = Version.vertxGuice)
+        version = Version.VERTX_GUICE)
 
     // Database
-    implementation(group = "org.flywaydb", name = "flyway-core", version = Version.flyway)
-    implementation(group = "org.jdbi", name = "jdbi3-core", version = Version.jdbi)
-    implementation(group = "org.jdbi", name = "jdbi3-kotlin", version = Version.jdbi)
-    implementation(group = "org.jdbi", name = "jdbi3-postgres", version = Version.jdbi)
-    implementation(group = "org.jdbi", name = "jdbi3-kotlin-sqlobject", version = Version.jdbi)
-    implementation(group = "com.zaxxer", name = "HikariCP", version = Version.hikariCp)
+    implementation(group = "org.flywaydb", name = "flyway-core", version = Version.FLYWAY)
+    implementation(group = "org.jdbi", name = "jdbi3-core", version = Version.JDBI)
+    implementation(group = "org.jdbi", name = "jdbi3-kotlin", version = Version.JDBI)
+    implementation(group = "org.jdbi", name = "jdbi3-postgres", version = Version.JDBI)
+    implementation(group = "org.jdbi", name = "jdbi3-kotlin-sqlobject", version = Version.JDBI)
+    implementation(group = "com.zaxxer", name = "HikariCP", version = Version.HIKARI_CP)
     implementation(
         group = "com.fasterxml.jackson.module",
         name = "jackson-module-kotlin",
-        version = Version.jackson)
+        version = Version.JACKSON)
 
     // Testing
     testImplementation(
         group = "org.junit.jupiter",
         name = "junit-jupiter-api",
-        version = Version.junit)
+        version = Version.JUNIT)
     testImplementation(
         group = "org.junit.jupiter",
         name = "junit-jupiter-engine",
-        version = Version.junit)
+        version = Version.JUNIT)
     testImplementation(kotlin("test-junit5"))
     testImplementation(
         group = "name.falgout.jeffrey.testing.junit5",
         name = "guice-extension",
-        version = Version.junitGuice)
+        version = Version.JUNIT_GUICE)
 }
 
 buildscript {
@@ -81,9 +81,9 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath(group = "com.jdiazcano.cfg4k", name = "cfg4k-core", version = Version.cfg4k)
-        classpath(group = "com.jdiazcano.cfg4k", name = "cfg4k-yaml", version = Version.cfg4k)
-        classpath(group = "org.postgresql", name = "postgresql", version = Version.postgresql)
+        classpath(group = "com.jdiazcano.cfg4k", name = "cfg4k-core", version = Version.CFG4K)
+        classpath(group = "com.jdiazcano.cfg4k", name = "cfg4k-yaml", version = Version.CFG4K)
+        classpath(group = "org.postgresql", name = "postgresql", version = Version.POSTGRESQL)
     }
 }
 
