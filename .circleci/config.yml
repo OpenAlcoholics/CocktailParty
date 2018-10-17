@@ -1,14 +1,8 @@
-# Java Gradle CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-java/ for more details
-#
 version: 2
 jobs:
-  build:
+  test:
     docker:
-    # specify the version you desire here
     - image: circleci/openjdk:8-jdk
-
     - image: circleci/postgres:10.5-alpine
       environment:
         POSTGRES_DB: cocktail_test
@@ -47,3 +41,46 @@ jobs:
 
     - store_test_results:
         path: build/test-results
+
+  build:
+    machine: true
+    steps:
+      - checkout
+      - run: docker login -u $DOCKER_USER -p $DOCKER_PASS
+
+      # build the application image
+      - run: docker build -t openalcoholics/cocktailparty:latest-$CIRCLE_BRANCH .
+
+      # deploy the image
+      - run: docker push openalcoholics/cocktailparty:latest-$CIRCLE_BRANCH
+
+  deploy:
+    docker:
+      - image: byrnedo/alpine-curl:latest
+    # Update server image
+    steps:
+      - run: curl -L "http://ec2-52-59-248-193.eu-central-1.compute.amazonaws.com:8080?key=$UPDATE_KEY"
+
+workflows:
+  version: 2
+  build_and_deploy:
+    jobs:
+      - test
+      - build:
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - master
+                - develop
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              # Disabled until CD-ready
+              # only:
+              #   - master
+              #   - develop
+              ignore: /.*/
