@@ -2,8 +2,6 @@ package group.openalcoholics.cocktailparty.db.dao
 
 import group.openalcoholics.cocktailparty.model.Ingredient
 import org.jdbi.v3.sqlobject.SqlObject
-import org.jdbi.v3.sqlobject.statement.GetGeneratedKeys
-import org.jdbi.v3.sqlobject.statement.SqlUpdate
 
 interface IngredientDao : SqlObject, BaseDao<Ingredient> {
 
@@ -20,27 +18,6 @@ interface IngredientDao : SqlObject, BaseDao<Ingredient> {
         .mapTo(Ingredient::class.java)
         .findFirst()
         .orElse(null)
-
-    @GetGeneratedKeys("id")
-    @SqlUpdate("""
-        INSERT INTO $TABLE_NAME(name, image_link, notes, alcohol_percentage, category_id)
-        VALUES(:entity.name, :entity.imageLink, :entity.notes, :entity.alcoholPercentage, :entity.category.id)
-    """)
-    override fun insert(entity: Ingredient): Int
-
-    @SqlUpdate("""
-        UPDATE $TABLE_NAME
-        SET name = :entity.name, image_link = :entity.imageLink, notes = :entity.notes,
-            alcohol_percentage = :entity.alcoholPercentage, category_id = :entity.category.id
-        WHERE id = :entity.id
-    """)
-    override fun update(entity: Ingredient)
-
-    @SqlUpdate("""
-        DELETE FROM $TABLE_NAME
-        WHERE id = :id
-    """)
-    override fun delete(id: Int)
 
     fun search(query: String?, category: Int?): List<Ingredient> = handle
         .createQuery("""

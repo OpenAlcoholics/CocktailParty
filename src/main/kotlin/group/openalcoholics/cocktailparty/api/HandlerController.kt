@@ -10,6 +10,7 @@ fun Any.encodeJson(): String = Json.encodePrettily(this)
 
 inline fun <reified T> RoutingContext.bodyAs(): T = Json.decodeValue(body, T::class.java)
 fun <T : Any> RoutingContext.bodyAs(clazz: KClass<T>): T = Json.decodeValue(body, clazz.java)
+fun <T : Any> RoutingContext.bodyAs(clazz: Class<T>): T = Json.decodeValue(body, clazz)
 
 fun RoutingContext.pathId() = pathParam("id").toInt()
 

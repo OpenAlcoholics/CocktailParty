@@ -5,9 +5,6 @@ import group.openalcoholics.cocktailparty.model.CocktailAccessory
 import group.openalcoholics.cocktailparty.model.CocktailIngredient
 import org.jdbi.v3.core.kotlin.KotlinMapper
 import org.jdbi.v3.sqlobject.SqlObject
-import org.jdbi.v3.sqlobject.customizer.Timestamped
-import org.jdbi.v3.sqlobject.statement.GetGeneratedKeys
-import org.jdbi.v3.sqlobject.statement.SqlUpdate
 import java.util.*
 
 interface CocktailDao : SqlObject, BaseDao<Cocktail> {
@@ -52,30 +49,6 @@ interface CocktailDao : SqlObject, BaseDao<Cocktail> {
             cocktail
         }
         ?.transferFromMutable()
-
-    @GetGeneratedKeys("id")
-    @Timestamped
-    @SqlUpdate("""
-        INSERT INTO $TABLE_NAME(name, image_link, description, revision_date, notes, category_id, glass_id)
-        VALUES(:entity.name, :entity.imageLink, :entity.description, :now, :entity.notes, :entity.category.id, :entity.glass.id)
-    """)
-    override fun insert(entity: Cocktail): Int
-
-    @Timestamped
-    @SqlUpdate("""
-        UPDATE $TABLE_NAME
-        SET name = :entity.name, image_link = :entity.imageLink, description = :entity.description,
-            revision_date = :now, notes = :entity.notes, category_id = :entity.category.id,
-            glass_id = :entity.glass.id
-        WHERE id = :entity.id
-    """)
-    override fun update(entity: Cocktail)
-
-    @SqlUpdate("""
-        DELETE FROM $TABLE_NAME
-        WHERE id = :id
-    """)
-    override fun delete(id: Int)
 
     fun search(query: String?, category: Int?): List<Cocktail> = handle
         .createQuery("""
