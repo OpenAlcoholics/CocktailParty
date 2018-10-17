@@ -31,6 +31,7 @@ dependencies {
         group = "io.github.microutils",
         name = "kotlin-logging",
         version = Version.KOTLIN_LOGGING)
+    implementation(group = "org.slf4j", name = "jul-to-slf4j", version = Version.SLF4J)
     implementation(group = "org.slf4j", name = "slf4j-simple", version = Version.SLF4J)
     implementation(group = "com.google.guava", name = "guava", version = Version.GUAVA)
     implementation(group = "com.google.inject", name = "guice", version = Version.GUICE)

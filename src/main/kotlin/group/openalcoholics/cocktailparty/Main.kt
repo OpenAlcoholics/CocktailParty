@@ -12,6 +12,7 @@ import io.vertx.core.Vertx
 import io.vertx.kotlin.core.json.json
 import io.vertx.kotlin.core.json.obj
 import mu.KotlinLogging
+import java.util.logging.LogManager
 
 class Launcher : AbstractVerticle() {
     private val logger = KotlinLogging.logger { }
@@ -33,6 +34,9 @@ class Launcher : AbstractVerticle() {
 }
 
 fun main(args: Array<String>) {
+    LogManager.getLogManager().readConfiguration(Launcher::class.java
+        .getResourceAsStream("/logging.properties"))
+
     val vertx = Vertx.vertx()
     deploy(vertx, Launcher::class.java)
 }
