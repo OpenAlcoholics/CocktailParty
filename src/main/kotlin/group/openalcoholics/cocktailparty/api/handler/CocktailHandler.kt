@@ -75,8 +75,8 @@ class CocktailHandler(private val jdbi: Jdbi) : HandlerController,
     }
 
     override fun update(ctx: RoutingContext) {
-        val updated = ctx.bodyAs<Cocktail>()
         val id = ctx.pathId()
+        val updated = ctx.bodyAs<Cocktail>().withId(id)
 
         // TODO check authorization
 

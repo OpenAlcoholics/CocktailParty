@@ -65,9 +65,6 @@ private class DefaultCrudHandler<T : BaseModel<T>, D : BaseDao<T>>(
 
     override fun insert(ctx: RoutingContext) {
         val entity = ctx.bodyAs(tClass)
-        jdbi.withExtensionUnchecked(daoClass) {
-            it.insert(entity)
-        }
         ctx.vertx().executeBlocking({ future: Future<T> ->
             try {
                 future.complete(entity.withId(jdbi.withExtensionUnchecked(daoClass) {
@@ -86,8 +83,8 @@ private class DefaultCrudHandler<T : BaseModel<T>, D : BaseDao<T>>(
     }
 
     override fun update(ctx: RoutingContext) {
-        val updatedEntity = ctx.bodyAs(tClass)
         val id = ctx.pathId()
+        val updatedEntity = ctx.bodyAs(tClass).withId(id)
 
         ctx.vertx().executeBlocking({ future: Future<T> ->
             jdbi.useHandleUnchecked { handle ->
