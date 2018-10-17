@@ -1,5 +1,6 @@
 package group.openalcoholics.cocktailparty.api
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.google.inject.Inject
 import group.openalcoholics.cocktailparty.api.handler.CocktailCategoryHandler
@@ -40,8 +41,10 @@ class Api @Inject constructor(
         OpenAPI3RouterFactory.create(vertx, "openapi/OpenCocktail.yaml") { result ->
             if (result.succeeded()) {
                 KotlinModule().let {
-                    Json.mapper.registerModule(it)
-                    Json.prettyMapper.registerModule(it)
+                    listOf(Json.mapper, Json.prettyMapper).forEach { mapper ->
+                        mapper.registerModule(it)
+                        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+                    }
                 }
 
                 // Spec loaded with success
