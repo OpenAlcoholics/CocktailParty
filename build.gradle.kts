@@ -31,6 +31,7 @@ dependencies {
         version = Version.kotlinLogging)
     implementation(group = "org.slf4j", name = "slf4j-simple", version = Version.slf4j)
     implementation(group = "com.google.guava", name = "guava", version = Version.guava)
+    implementation(group = "com.google.inject", name = "guice", version = Version.guice)
 
     // Config
     implementation(group = "com.jdiazcano.cfg4k", name = "cfg4k-core", version = Version.cfg4k)
@@ -42,7 +43,9 @@ dependencies {
         exclude(group = "org.jetbrains.kotlin")
     }
     implementation(group = "io.vertx", name = "vertx-auth-jwt", version = Version.vertx)
-    implementation(group = "com.englishtown.vertx", name = "vertx-guice",
+    implementation(
+        group = "com.englishtown.vertx",
+        name = "vertx-guice",
         version = Version.vertxGuice)
 
     // Database

@@ -5,6 +5,7 @@ object Version {
     val kotlinLogging = "1.6.10"
     val slf4j = "1.7.25"
     val guava = "26.0-jre"
+    val guice = "4.2.1"
 
     val vertx = "3.5.4"
     val vertxGuice = "2.3.1"
