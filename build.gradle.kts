@@ -22,6 +22,8 @@ application {
     mainClassName = "group.openalcoholics.cocktailparty.Main"
 }
 
+version = "0.1.0"
+
 dependencies {
     // Basics
     implementation(kotlin("stdlib-jdk8"))
@@ -84,6 +86,14 @@ buildscript {
         classpath(group = "com.jdiazcano.cfg4k", name = "cfg4k-core", version = Version.CFG4K)
         classpath(group = "com.jdiazcano.cfg4k", name = "cfg4k-yaml", version = Version.CFG4K)
         classpath(group = "org.postgresql", name = "postgresql", version = Version.POSTGRESQL)
+    }
+}
+
+val processResources by tasks.getting(ProcessResources::class) {
+    filesMatching("**/version.properties") {
+        filter {
+            it.replace("%APP_VERSION%", version.toString())
+        }
     }
 }
 
