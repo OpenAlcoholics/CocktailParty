@@ -1,7 +1,7 @@
 FROM openjdk:8-jdk-slim AS builder
 WORKDIR /appSrc
 COPY . .
-RUN ./gradlew installDist -x test -x check
+RUN chmod +x gradlew && ./gradlew installDist -x test -x check
 
 FROM openjdk:8-jre-alpine
 WORKDIR /app
