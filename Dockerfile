@@ -1,7 +1,7 @@
-FROM gradle:4.10-jdk8-slim AS builder
+FROM openjdk:8-jdk-slim AS builder
 WORKDIR /appSrc
 COPY . .
-RUN gradle installDist -x test -x check
+RUN ./gradlew installDist -x test -x check
 
 FROM openjdk:8-jre-alpine
 WORKDIR /app
