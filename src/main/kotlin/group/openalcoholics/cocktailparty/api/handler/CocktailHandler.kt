@@ -4,15 +4,18 @@ import group.openalcoholics.cocktailparty.api.HandlerController
 import group.openalcoholics.cocktailparty.api.Status
 import group.openalcoholics.cocktailparty.api.bodyAs
 import group.openalcoholics.cocktailparty.api.end
+import group.openalcoholics.cocktailparty.api.fail
 import group.openalcoholics.cocktailparty.api.pathId
 import group.openalcoholics.cocktailparty.api.setStatus
 import group.openalcoholics.cocktailparty.db.dao.CocktailAccessoryDao
 import group.openalcoholics.cocktailparty.db.dao.CocktailDao
 import group.openalcoholics.cocktailparty.db.dao.CocktailIngredientDao
 import group.openalcoholics.cocktailparty.model.Cocktail
+import io.vertx.core.Future
 import io.vertx.ext.web.RoutingContext
 import io.vertx.ext.web.api.contract.openapi3.OpenAPI3RouterFactory
 import org.jdbi.v3.core.Jdbi
+import org.jdbi.v3.core.kotlin.useHandleUnchecked
 import org.jdbi.v3.core.kotlin.withExtensionUnchecked
 
 class CocktailHandler(private val jdbi: Jdbi) : HandlerController,
@@ -28,23 +31,47 @@ class CocktailHandler(private val jdbi: Jdbi) : HandlerController,
 
     override fun insert(ctx: RoutingContext) {
         val cocktail = ctx.bodyAs<Cocktail>()
-        val inserted = cocktail.withId(jdbi.withExtensionUnchecked(CocktailDao::class) {
-            it.insert(cocktail)
-        })
-        // TODO use a handle for all of this
-        jdbi.withExtensionUnchecked(CocktailIngredientDao::class) {
-            cocktail.ingredients.forEachIndexed { rank, ingredients ->
-                ingredients.forEach { ingredient ->
-                    it.addIngredient(inserted.id, ingredient.ingredientId, ingredient.share, rank)
+
+        ctx.vertx().executeBlocking({ future: Future<Cocktail> ->
+            jdbi.useHandleUnchecked { handle ->
+                handle.begin()
+                try {
+                    val cocktailDao = handle.attach(CocktailDao::class.java)!!
+                    val inserted = cocktail.withId(cocktailDao.insert(cocktail))
+
+                    val cocktailIngredientDao = handle.attach(CocktailIngredientDao::class.java)!!
+                    cocktail.ingredients.forEachIndexed { rank, ingredients ->
+                        ingredients.forEach { ingredient ->
+                            cocktailIngredientDao.addIngredient(
+                                inserted.id,
+                                ingredient.ingredientId,
+                                ingredient.share,
+                                rank)
+                        }
+                    }
+
+                    val cocktailAccessoryDao = handle.attach(CocktailAccessoryDao::class.java)!!
+                    cocktail.accessories.forEach { accessory ->
+                        cocktailAccessoryDao
+                            .addAccessory(inserted.id, accessory.accessoryId, accessory.pieces)
+                    }
+
+                    handle.commit()
+                    future.complete(inserted)
+                } catch (failure: Throwable) {
+                    handle.rollback()
+                    future.fail(failure)
                 }
             }
-        }
-        jdbi.withExtensionUnchecked(CocktailAccessoryDao::class) {
-            cocktail.accessories.forEach { accessory ->
-                it.addAccessory(inserted.id, accessory.accessoryId, accessory.pieces)
+        }, { result ->
+            if (result.succeeded()) {
+                ctx.response().end(result.result())
+            } else {
+                ctx.fail(Status.INTERNAL_SERVER_ERROR)
             }
-        }
-        ctx.response().end(inserted)
+        })
+
+
     }
 
     override fun update(ctx: RoutingContext) {

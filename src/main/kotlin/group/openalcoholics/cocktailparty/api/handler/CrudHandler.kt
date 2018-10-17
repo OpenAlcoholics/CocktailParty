@@ -8,10 +8,14 @@ import group.openalcoholics.cocktailparty.api.pathId
 import group.openalcoholics.cocktailparty.api.setStatus
 import group.openalcoholics.cocktailparty.db.dao.BaseDao
 import group.openalcoholics.cocktailparty.model.BaseModel
+import io.vertx.core.Future
 import io.vertx.ext.web.RoutingContext
+import mu.KotlinLogging
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.useExtensionUnchecked
+import org.jdbi.v3.core.kotlin.useHandleUnchecked
 import org.jdbi.v3.core.kotlin.withExtensionUnchecked
+import java.util.*
 import kotlin.reflect.KClass
 
 interface CrudHandler {
@@ -34,47 +38,100 @@ private class DefaultCrudHandler<T : BaseModel<T>, D : BaseDao<T>>(
     private val daoClass: KClass<D>,
     private val jdbi: Jdbi) : CrudHandler {
 
+    private val logger = KotlinLogging.logger {}
+
     override fun get(ctx: RoutingContext) {
         val id = ctx.pathId()
-        val entity = jdbi.withExtensionUnchecked(daoClass) {
-            it.find(id)
-        }
 
-        if (entity == null) ctx.fail(Status.NOT_FOUND)
-        else ctx.response().end(entity)
+        ctx.vertx().executeBlocking({ future: Future<T?> ->
+            try {
+                future.complete(jdbi.withExtensionUnchecked(daoClass) {
+                    it.find(id)
+                })
+            } catch (failure: Throwable) {
+                future.fail(failure)
+            }
+        }, { result ->
+            if (result.succeeded()) {
+                val entity = result.result()
+                if (entity == null) ctx.fail(Status.NOT_FOUND)
+                else ctx.response().end(entity)
+            } else {
+                logger.error(result.cause()) { "Error during get" }
+                ctx.fail(Status.INTERNAL_SERVER_ERROR)
+            }
+        })
     }
 
     override fun insert(ctx: RoutingContext) {
         val entity = ctx.bodyAs(tClass)
-        val inserted = entity.withId(jdbi.withExtensionUnchecked(daoClass) {
+        jdbi.withExtensionUnchecked(daoClass) {
             it.insert(entity)
+        }
+        ctx.vertx().executeBlocking({ future: Future<T> ->
+            try {
+                future.complete(entity.withId(jdbi.withExtensionUnchecked(daoClass) {
+                    it.insert(entity)
+                }))
+            } catch (failure: Throwable) {
+                future.fail(failure)
+            }
+        }, { result ->
+            if (result.succeeded()) ctx.response().end(result.result())
+            else {
+                logger.error(result.cause()) { "Error during insert" }
+                ctx.fail(Status.INTERNAL_SERVER_ERROR)
+            }
         })
-        ctx.response().end(inserted)
     }
 
     override fun update(ctx: RoutingContext) {
         val updatedEntity = ctx.bodyAs(tClass)
         val id = ctx.pathId()
-        jdbi.withExtensionUnchecked(daoClass) {
-            it.find(id)
-        } ?: return ctx.fail(Status.NOT_FOUND)
 
-        jdbi.useExtensionUnchecked(daoClass) {
-            it.update(updatedEntity)
-        }
+        ctx.vertx().executeBlocking({ future: Future<T> ->
+            jdbi.useHandleUnchecked { handle ->
+                val dao = handle.attach(daoClass.java)
+                dao.find(id) ?: return@useHandleUnchecked ctx.fail(Status.NOT_FOUND)
 
-        val result = jdbi.withExtensionUnchecked(daoClass) {
-            it.find(id)
-        } ?: return ctx.fail(Status.NOT_FOUND)
-
-        ctx.response().end(result)
+                handle.begin()
+                try {
+                    dao.update(updatedEntity)
+                    val foundUpdated = dao.find(id) ?: throw ConcurrentModificationException()
+                    handle.commit()
+                    future.complete(foundUpdated)
+                } catch (failure: Throwable) {
+                    handle.rollback()
+                    future.fail(failure)
+                }
+            }
+        }, { result ->
+            if (result.succeeded()) ctx.response().end(result.result())
+            else {
+                logger.error(result.cause()) { "Error during update" }
+                ctx.fail(Status.INTERNAL_SERVER_ERROR)
+            }
+        })
     }
 
     override fun delete(ctx: RoutingContext) {
         val id = ctx.pathId()
-        jdbi.useExtensionUnchecked(daoClass) {
-            it.delete(id)
-        }
-        ctx.response().setStatus(Status.NO_CONTENT).end()
+
+        ctx.vertx().executeBlocking({ future: Future<Unit?> ->
+            try {
+                jdbi.useExtensionUnchecked(daoClass) { dao ->
+                    dao.delete(id)
+                }
+                future.complete()
+            } catch (failure: Throwable) {
+                future.fail(failure)
+            }
+        }, { result ->
+            if (result.succeeded()) ctx.response().setStatus(Status.NO_CONTENT).end()
+            else {
+                logger.error(result.cause()) { "Error during delete" }
+                ctx.fail(Status.INTERNAL_SERVER_ERROR)
+            }
+        })
     }
 }
