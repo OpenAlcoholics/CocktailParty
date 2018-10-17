@@ -3,7 +3,7 @@ WORKDIR /appSrc
 COPY . .
 RUN chmod +x gradlew && ./gradlew installDist -x test -x check
 
-FROM openjdk:8-jre-slim
+FROM openjdk:8-jre-alpine
 WORKDIR /app
 COPY --from=builder /appSrc/build/install/CocktailParty .
 EXPOSE 8080
