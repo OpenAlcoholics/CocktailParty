@@ -16,22 +16,9 @@ import mu.KotlinLogging
 
 class SecurityHandler
 @Throws(AuthConfigurationException::class)
-constructor(vertx: Vertx, authConfig: AuthConfig) : Handler<RoutingContext> {
+constructor(private val jwtAuth: JWTAuth) : Handler<RoutingContext> {
 
     private val logger = KotlinLogging.logger {}
-    private val jwtAuth: JWTAuth
-
-    init {
-        val sha = authConfig.sha
-        if (sha !in listOf(256, 384, 512))
-            throw AuthConfigurationException(
-                "auth.sha must be one of [256, 384, 512]")
-        val jwtOptions = JWTAuthOptions(
-            pubSecKeys = listOf(PubSecKeyOptions(
-                algorithm = "RS$sha",
-                publicKey = authConfig.publicKey)))
-        jwtAuth = JWTAuth.create(vertx, jwtOptions)!!
-    }
 
     override fun handle(ctx: RoutingContext) {
         // TODO we should find a way to return the required permissions here

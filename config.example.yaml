@@ -21,5 +21,9 @@ api:
 auth:
   # Base64 encoded public RSA key in the PEM format to authenticate JWTs
   publicKey:
+  # Base64 encoded private RSA key in the PEM format to generate JWT tokens
+  privateKey:
   # Whether to use sha-256, sha-384 or sha-512
   sha: 256
+  # An arbitrary API key for the admin login endpoint
+  adminKey:

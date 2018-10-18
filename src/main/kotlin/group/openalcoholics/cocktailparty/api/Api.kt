@@ -3,6 +3,8 @@ package group.openalcoholics.cocktailparty.api
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.google.inject.Inject
+import group.openalcoholics.cocktailparty.api.handler.AdminLoginHandler
+import group.openalcoholics.cocktailparty.api.handler.AdminSecurityHandler
 import group.openalcoholics.cocktailparty.api.handler.AuthConfigurationException
 import group.openalcoholics.cocktailparty.api.handler.CocktailCategoryHandler
 import group.openalcoholics.cocktailparty.api.handler.CocktailHandler
@@ -18,6 +20,7 @@ import io.vertx.core.AbstractVerticle
 import io.vertx.core.Future
 import io.vertx.core.http.HttpServerOptions
 import io.vertx.core.json.Json
+import io.vertx.ext.auth.jwt.JWTAuth
 import io.vertx.ext.web.api.contract.openapi3.OpenAPI3RouterFactory
 import io.vertx.kotlin.ext.web.api.contract.RouterFactoryOptions
 import mu.KotlinLogging
@@ -25,6 +28,7 @@ import mu.KotlinLogging
 class Api @Inject constructor(
     private val apiConfig: ApiConfig,
     private val authConfig: AuthConfig,
+    private val jwtAuth: JWTAuth,
     private val versionHandler: VersionHandler,
     private val glassHandler: GlassHandler,
     private val ingredientCategoryHandler: IngredientCategoryHandler,
@@ -60,8 +64,12 @@ class Api @Inject constructor(
                     .register(cocktailCategoryHandler)
                     .register(cocktailHandler)
 
+                    // TODO this is a temporary endpoint until we have a proper solution
+                    .register(AdminLoginHandler(jwtAuth, authConfig))
+
                 try {
-                    routerFactory.addSecurityHandler("Token", SecurityHandler(vertx, authConfig))
+                    routerFactory.addSecurityHandler("Token", SecurityHandler(jwtAuth))
+                    routerFactory.addSecurityHandler("Admin", AdminSecurityHandler(authConfig))
                 } catch (e: AuthConfigurationException) {
                     return@create startFuture.fail(e)
                 }

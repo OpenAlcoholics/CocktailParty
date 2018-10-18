@@ -38,3 +38,12 @@ database:
   host: localhost
 ```
 is `DATABASE_HOST=localhost`.
+
+### Key generation cheat sheet
+```
+openssl genrsa -out key.pem 2048
+// Copy the publicKey from the resulting pub.pem
+openssl rsa -in .\key.pem -outform PEM -pubout -out pub.pem
+// Copy the private key from the resulting private.pem
+openssl pkcs8 -topk8 -nocrypt -in .\key.pem -pubout -out private.pem
+```

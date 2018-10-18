@@ -11,8 +11,9 @@ class FailureHandler : Handler<RoutingContext> {
     private val logger = KotlinLogging.logger { }
 
     override fun handle(ctx: RoutingContext) {
-        val failure = ctx.failure()!!
+        val failure = ctx.failure()
         when (failure) {
+            null -> ctx.next()
             is StatusException ->
                 if (failure.body == null)
                     ctx.response().setStatusCode(failure.status.code).end()
