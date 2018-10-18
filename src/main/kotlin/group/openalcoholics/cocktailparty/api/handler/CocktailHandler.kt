@@ -1,10 +1,11 @@
 package group.openalcoholics.cocktailparty.api.handler
 
 import group.openalcoholics.cocktailparty.api.HandlerController
+import group.openalcoholics.cocktailparty.api.InternalServerError
+import group.openalcoholics.cocktailparty.api.NotFoundException
 import group.openalcoholics.cocktailparty.api.Status
 import group.openalcoholics.cocktailparty.api.bodyAs
 import group.openalcoholics.cocktailparty.api.end
-import group.openalcoholics.cocktailparty.api.fail
 import group.openalcoholics.cocktailparty.api.pathId
 import group.openalcoholics.cocktailparty.api.setStatus
 import group.openalcoholics.cocktailparty.db.dao.CocktailAccessoryDao
@@ -68,15 +69,9 @@ class CocktailHandler(private val jdbi: Jdbi) : HandlerController,
                 }
             }
         }, { result ->
-            if (result.succeeded()) {
-                ctx.response().end(result.result())
-            } else {
-                logger.error(result.cause()) { "Error during insert" }
-                ctx.fail(Status.INTERNAL_SERVER_ERROR)
-            }
+            if (result.succeeded()) ctx.response().setStatus(Status.CREATED).end(result.result())
+            else ctx.fail(result.cause())
         })
-
-
     }
 
     override fun update(ctx: RoutingContext) {
@@ -88,15 +83,8 @@ class CocktailHandler(private val jdbi: Jdbi) : HandlerController,
                 val cocktailDao = handle.attach(CocktailDao::class.java)
 
                 @Suppress("UNUSED_VARIABLE")
-                val old = try {
-                    cocktailDao.find(id)
-                } catch (failure: Throwable) {
-                    return@useHandleUnchecked future.fail(failure)
-                } ?: return@useHandleUnchecked ctx.response().run {
-                    setStatus(Status.NOT_FOUND)
-                    end()
-                }
-                // TODO check authorization
+                val old = cocktailDao.find(id) ?: throw NotFoundException()
+                // TODO (use old value to) check authorization
 
                 handle.begin()
                 try {
@@ -127,12 +115,8 @@ class CocktailHandler(private val jdbi: Jdbi) : HandlerController,
                 }
             }
         }, { result ->
-            if (result.succeeded()) {
-                ctx.response().end(result.result())
-            } else {
-                logger.error(result.cause()) { "Error during update" }
-                ctx.fail(Status.INTERNAL_SERVER_ERROR)
-            }
+            if (result.succeeded()) ctx.response().end(result.result())
+            else ctx.fail(result.cause())
         })
     }
 
@@ -141,20 +125,12 @@ class CocktailHandler(private val jdbi: Jdbi) : HandlerController,
         val category = ctx.queryParam("category").firstOrNull()?.toInt()
 
         ctx.vertx().executeBlocking({ future: Future<List<Cocktail>> ->
-            try {
-                future.complete(jdbi.withExtensionUnchecked(CocktailDao::class) {
-                    it.search(query, category)
-                })
-            } catch (failure: Throwable) {
-                future.fail(failure)
-            }
+            future.complete(jdbi.withExtensionUnchecked(CocktailDao::class) {
+                it.search(query, category)
+            })
         }, { result ->
-            if (result.succeeded()) {
-                ctx.response().end(result.result())
-            } else {
-                logger.error(result.cause()) { "Error during search" }
-                ctx.fail(Status.INTERNAL_SERVER_ERROR)
-            }
+            if (result.succeeded()) ctx.response().end(result.result())
+            else ctx.fail(result.cause())
         })
     }
 }

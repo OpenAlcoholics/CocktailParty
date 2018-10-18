@@ -1,7 +1,7 @@
 package group.openalcoholics.cocktailparty.api
 
+import group.openalcoholics.cocktailparty.model.AuthExpectation
 import io.vertx.core.http.HttpServerResponse
-import io.vertx.ext.web.RoutingContext
 
 enum class Status(val code: Int) {
     // Success
@@ -22,8 +22,31 @@ enum class Status(val code: Int) {
     INTERNAL_SERVER_ERROR(500)
 }
 
-fun RoutingContext.fail(status: Status) = fail(status.code)
-
 fun HttpServerResponse.setStatus(status: Status) = this.apply {
     statusCode = status.code
+}
+
+open class StatusException : Exception {
+    val status: Status
+    val body: Any?
+
+    constructor(status: Status, body: Any? = null) : super("Failed with status: $status") {
+        this.status = status
+        this.body = body
+    }
+
+    constructor(status: Status, cause: Throwable, body: Any? = null) :
+        super("Failed with status $status", cause) {
+        this.status = status
+        this.body = body
+    }
+}
+
+class NotFoundException : StatusException(Status.NOT_FOUND)
+class AuthException(status: Status, authExpectation: AuthExpectation) :
+    StatusException(status, authExpectation)
+
+class InternalServerError : StatusException {
+    constructor() : super(Status.INTERNAL_SERVER_ERROR)
+    constructor(cause: Throwable) : super(Status.INTERNAL_SERVER_ERROR, cause = cause)
 }

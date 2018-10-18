@@ -6,6 +6,7 @@ import com.google.inject.Inject
 import group.openalcoholics.cocktailparty.api.handler.AuthConfigurationException
 import group.openalcoholics.cocktailparty.api.handler.CocktailCategoryHandler
 import group.openalcoholics.cocktailparty.api.handler.CocktailHandler
+import group.openalcoholics.cocktailparty.api.handler.FailureHandler
 import group.openalcoholics.cocktailparty.api.handler.GlassHandler
 import group.openalcoholics.cocktailparty.api.handler.IngredientCategoryHandler
 import group.openalcoholics.cocktailparty.api.handler.IngredientHandler
@@ -19,6 +20,7 @@ import io.vertx.core.http.HttpServerOptions
 import io.vertx.core.json.Json
 import io.vertx.ext.web.api.contract.openapi3.OpenAPI3RouterFactory
 import io.vertx.kotlin.ext.web.api.contract.RouterFactoryOptions
+import mu.KotlinLogging
 
 class Api @Inject constructor(
     private val apiConfig: ApiConfig,
@@ -29,6 +31,8 @@ class Api @Inject constructor(
     private val ingredientHandler: IngredientHandler,
     private val cocktailCategoryHandler: CocktailCategoryHandler,
     private val cocktailHandler: CocktailHandler) : AbstractVerticle() {
+
+    private val logger = KotlinLogging.logger {}
 
     private fun OpenAPI3RouterFactory.register(controller: HandlerController) = this.apply {
         controller.register(this)
@@ -63,6 +67,12 @@ class Api @Inject constructor(
                 }
 
                 val router = routerFactory.router!!
+                router.exceptionHandler {
+                    if (it !is StatusException) {
+                        logger.error(it) { "An unknown error occurred." }
+                    }
+                }
+                router.route().failureHandler(FailureHandler())
 
                 val serverOptions = HttpServerOptions().apply {
                     host = apiConfig.host

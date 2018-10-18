@@ -1,9 +1,8 @@
 package group.openalcoholics.cocktailparty.api.handler
 
 import group.openalcoholics.cocktailparty.api.HandlerController
-import group.openalcoholics.cocktailparty.api.Status
+import group.openalcoholics.cocktailparty.api.InternalServerError
 import group.openalcoholics.cocktailparty.api.end
-import group.openalcoholics.cocktailparty.api.fail
 import group.openalcoholics.cocktailparty.db.dao.IngredientDao
 import group.openalcoholics.cocktailparty.model.Ingredient
 import io.vertx.core.Future
@@ -30,20 +29,12 @@ class IngredientHandler(private val jdbi: Jdbi) : HandlerController,
         val query = ctx.queryParam("q").firstOrNull()
         val category = ctx.queryParam("category").firstOrNull()?.toInt()
         ctx.vertx().executeBlocking({ future: Future<List<Ingredient>> ->
-            try {
-                future.complete(jdbi.withExtensionUnchecked(IngredientDao::class) {
-                    it.search(query, category)
-                })
-            } catch (failure: Throwable) {
-                future.fail(failure)
-            }
+            future.complete(jdbi.withExtensionUnchecked(IngredientDao::class) {
+                it.search(query, category)
+            })
         }, { result ->
-            if (result.succeeded()) {
-                ctx.response().end(result.result())
-            } else {
-                logger.error(result.cause()) { "Error during search" }
-                ctx.fail(Status.INTERNAL_SERVER_ERROR)
-            }
+            if (result.succeeded()) ctx.response().end(result.result())
+            else ctx.fail(result.cause())
         })
     }
 }

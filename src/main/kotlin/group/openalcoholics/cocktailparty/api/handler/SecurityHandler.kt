@@ -1,8 +1,7 @@
 package group.openalcoholics.cocktailparty.api.handler
 
+import group.openalcoholics.cocktailparty.api.AuthException
 import group.openalcoholics.cocktailparty.api.Status
-import group.openalcoholics.cocktailparty.api.end
-import group.openalcoholics.cocktailparty.api.setStatus
 import group.openalcoholics.cocktailparty.model.AuthExpectation
 import group.openalcoholics.cocktailparty.module.AuthConfig
 import io.vertx.core.Handler
@@ -35,28 +34,24 @@ constructor(vertx: Vertx, authConfig: AuthConfig) : Handler<RoutingContext> {
     }
 
     override fun handle(ctx: RoutingContext) {
+        // TODO we should find a way to return the required permissions here
         val rawToken: String? = ctx.request().getHeader("Authorization")
         if (rawToken == null
             || !rawToken.startsWith("Bearer ")) {
-            logger.debug { "Received token with invalid format: $rawToken" }
-            ctx.response()
-                .setStatus(Status.UNAUTHORIZED)
-                .end(AuthExpectation(null))
-        } else {
-            val token = rawToken.substring("Bearer ".length)
-            jwtAuth.authenticate(json {
-                obj("jwt" to token)
-            }) { result ->
-                if (result.succeeded()) {
-                    ctx.setUser(result.result())
-                    ctx.next()
-                } else {
-                    logger.debug { "Could not verify a token" }
-                    // TODO we should find a way to return the required permissions here
-                    ctx.response()
-                        .setStatus(Status.UNAUTHORIZED)
-                        .end(AuthExpectation(null))
-                }
+            logger.warn { "Received token with invalid format: $rawToken" }
+            throw AuthException(Status.UNAUTHORIZED, AuthExpectation(null))
+        }
+
+        val token = rawToken.substring("Bearer ".length)
+        jwtAuth.authenticate(json {
+            obj("jwt" to token)
+        }) { result ->
+            if (result.succeeded()) {
+                ctx.setUser(result.result())
+                ctx.next()
+            } else {
+                logger.debug { "Could not verify a token" }
+                ctx.fail(AuthException(Status.UNAUTHORIZED, AuthExpectation(null)))
             }
         }
     }
