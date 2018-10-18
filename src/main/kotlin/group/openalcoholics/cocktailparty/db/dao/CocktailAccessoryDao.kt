@@ -7,7 +7,7 @@ import org.jdbi.v3.sqlobject.statement.SqlUpdate
 interface CocktailAccessoryDao : SqlObject, BaseDao<CocktailAccessory> {
     @SqlUpdate("""
         DELETE FROM $TABLE_NAME
-        WHERE drink_id = :id
+        WHERE drink_id = :cocktailId
     """)
     fun dropAccessories(cocktailId: Int)
 
