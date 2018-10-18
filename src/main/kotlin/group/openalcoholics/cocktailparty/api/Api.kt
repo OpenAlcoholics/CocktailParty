@@ -46,9 +46,7 @@ class Api @Inject constructor(
 
                 // Spec loaded with success
                 val routerFactory = result.result()!!
-                routerFactory.options = RouterFactoryOptions(
-                    mountNotImplementedHandler = true
-                )
+                routerFactory.options = RouterFactoryOptions()
 
                 routerFactory
                     .register(versionHandler)
