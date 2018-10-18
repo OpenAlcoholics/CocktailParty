@@ -17,5 +17,5 @@ object Version {
     const val POSTGRESQL = "42.2.5"
 
     const val JUNIT = "5.3.1"
-    const val JUNIT_GUICE = "1.0.2"
+    const val JUNIT_GUICE = "1.1.0"
 }
