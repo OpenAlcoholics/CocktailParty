@@ -20,10 +20,10 @@ class Launcher : AbstractVerticle() {
     override fun start(done: Future<Void>) {
         // TODO deployment opts
 
+        logger.info { "Deploying API..." }
         deploy(vertx, Api::class.java).setHandler {
-            logger.info { "Deploying API..." }
             if (it.succeeded()) {
-                logger.info { "API deployed" }
+                logger.info { "API successfully deployed" }
                 done.complete()
             } else {
                 logger.error(it.cause()) { "Deployment failed" }

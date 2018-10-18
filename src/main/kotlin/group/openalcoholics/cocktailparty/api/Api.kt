@@ -3,6 +3,7 @@ package group.openalcoholics.cocktailparty.api
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.google.inject.Inject
+import group.openalcoholics.cocktailparty.api.handler.AuthConfigurationException
 import group.openalcoholics.cocktailparty.api.handler.CocktailCategoryHandler
 import group.openalcoholics.cocktailparty.api.handler.CocktailHandler
 import group.openalcoholics.cocktailparty.api.handler.GlassHandler
@@ -18,7 +19,6 @@ import io.vertx.core.http.HttpServerOptions
 import io.vertx.core.json.Json
 import io.vertx.ext.web.api.contract.openapi3.OpenAPI3RouterFactory
 import io.vertx.kotlin.ext.web.api.contract.RouterFactoryOptions
-import mu.KotlinLogging
 
 class Api @Inject constructor(
     private val apiConfig: ApiConfig,
@@ -30,14 +30,11 @@ class Api @Inject constructor(
     private val cocktailCategoryHandler: CocktailCategoryHandler,
     private val cocktailHandler: CocktailHandler) : AbstractVerticle() {
 
-    private val logger = KotlinLogging.logger {}
-
     private fun OpenAPI3RouterFactory.register(controller: HandlerController) = this.apply {
         controller.register(this)
     }
 
-    @Throws(ApiInitializationException::class)
-    override fun start(startFuture: Future<Void>?) {
+    override fun start(startFuture: Future<Void>) {
         OpenAPI3RouterFactory.create(vertx, "openapi/OpenCocktail.yaml") { result ->
             if (result.succeeded()) {
                 KotlinModule().let {
@@ -61,7 +58,11 @@ class Api @Inject constructor(
                     .register(cocktailCategoryHandler)
                     .register(cocktailHandler)
 
-                routerFactory.addSecurityHandler("Token", SecurityHandler(vertx, authConfig))
+                try {
+                    routerFactory.addSecurityHandler("Token", SecurityHandler(vertx, authConfig))
+                } catch (e: AuthConfigurationException) {
+                    return@create startFuture.fail(e)
+                }
 
                 val router = routerFactory.router!!
 
@@ -71,18 +72,12 @@ class Api @Inject constructor(
                 }
                 val server = vertx.createHttpServer(serverOptions)
                 server.requestHandler { router.accept(it) }.listen()
+                startFuture.complete()
             } else {
                 // Something went wrong during router factory initialization
                 val exception = result.cause()
-                logger.error("Error during RouterFactory initialization", exception)
-                throw ApiInitializationException(exception)
+                startFuture.fail(exception)
             }
         }
     }
-}
-
-class ApiInitializationException : RuntimeException {
-    constructor(message: String) : super(message)
-    constructor(cause: Throwable) : super(cause)
-    constructor(message: String, cause: Throwable) : super(message, cause)
 }
