@@ -38,7 +38,7 @@ constructor(vertx: Vertx, authConfig: AuthConfig) : Handler<RoutingContext> {
         val rawToken: String? = ctx.request().getHeader("Authorization")
         if (rawToken == null
             || !rawToken.startsWith("Bearer ")) {
-            logger.warn { "Received token with invalid format: $rawToken" }
+            logger.debug { "Received token with invalid format: $rawToken" }
             throw AuthException(Status.UNAUTHORIZED, AuthExpectation(null))
         }
 
