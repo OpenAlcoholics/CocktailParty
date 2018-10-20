@@ -65,11 +65,22 @@ jobs:
     steps:
       - run: curl -L "http://ec2-52-59-248-193.eu-central-1.compute.amazonaws.com:8080?key=$UPDATE_KEY"
 
+  markdown_lint:
+    docker:
+      - image: 06kellyjac/markdownlint-cli:0.13.0-alpine
+        entrypoint:
+          - "/usr/bin/env"
+          - "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+    steps:
+      - checkout
+      - run: markdownlint README.md
+
 workflows:
   version: 2
   build_and_deploy:
     jobs:
       - test
+      - markdown_lint
       - build:
           requires:
             - test
