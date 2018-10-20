@@ -70,7 +70,6 @@ jobs:
       - image: 06kellyjac/markdownlint-cli:0.13.0-alpine
         entrypoint:
           - "/usr/bin/env"
-          - "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
     steps:
       - checkout
       - run: markdownlint README.md
