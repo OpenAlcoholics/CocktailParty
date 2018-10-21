@@ -1,54 +1,114 @@
 version: 2
 jobs:
+  assemble:
+    docker:
+      - image: circleci/openjdk:8-jdk
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run: git submodule sync
+      - run: git submodule update --init
+      - run: chmod +x gradlew
+
+        # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "build.gradle.kts" }}
+              # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
+
+      - run: ./gradlew dependencies
+
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: v1-dependencies-{{ checksum "build.gradle.kts" }}
+
+      - run: ./gradlew assemble
+
+      - persist_to_workspace:
+          root: .
+          paths:
+            - build
+            - buildSrc/build
+
+
   test:
     docker:
-    - image: circleci/openjdk:8-jdk
-    - image: circleci/postgres:10.5-alpine
-      environment:
-        POSTGRES_DB: cocktail_test
-        POSTGRES_USER: testuser
-        POSTGRES_PASSWORD: testpass # fuck it, I can't use env vars here
+      - image: circleci/openjdk:8-jdk
+      - image: circleci/postgres:10.5-alpine
+        environment:
+          POSTGRES_DB: cocktail_test
+          POSTGRES_USER: testuser
+          POSTGRES_PASSWORD: testpass # fuck it, I can't use env vars here
 
     working_directory: ~/repo
 
-    environment:
-      # Customize the JVM maximum heap limit
-      JVM_OPTS: -Xmx3200m
-
     steps:
-    - checkout
-    - run: git submodule sync
-    - run: git submodule update --init
-    - run: chmod +x gradlew
+      - checkout
+      - run: git submodule sync
+      - run: git submodule update --init
+      - run: chmod +x gradlew
 
-    # Download and cache dependencies
-    - restore_cache:
-        keys:
-        - v1-dependencies-{{ checksum "build.gradle.kts" }}
-        # fallback to using the latest cache if no exact match is found
-        - v1-dependencies-
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "build.gradle.kts" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
+      - attach_workspace:
+          at: .
 
-    - run: ./gradlew dependencies
-    - run: ./gradlew flywayMigrate
+      - run: ./gradlew flywayMigrate
+      - run: ./gradlew test
 
-    - save_cache:
-        paths:
-        - ~/.gradle
-        key: v1-dependencies-{{ checksum "build.gradle.kts" }}
+      - store_test_results:
+          path: build/test-results
 
-    # run tests!
-    - run: ./gradlew test
-
-    - store_test_results:
-        path: build/test-results
 
   build:
+    docker:
+      - image: circleci/openjdk:8-jdk
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+      - run: git submodule sync
+      - run: git submodule update --init
+      - run: chmod +x gradlew
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "build.gradle.kts" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
+      - attach_workspace:
+          at: .
+
+      - run: ./gradlew distZip -x check -x test
+      - store_artifacts:
+          path: build/distributions/
+          destination: distribution
+
+
+  build_docker:
     machine: true
     working_directory: ~/repo
     steps:
       - checkout
       - run: git submodule sync
       - run: git submodule update --init
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "build.gradle.kts" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
+      - attach_workspace:
+          at: .
 
       - run: docker login -u $DOCKER_USER -p $DOCKER_PASS
 
@@ -76,9 +136,15 @@ workflows:
   version: 2
   build_and_deploy:
     jobs:
-      - test
       - markdown_lint
+      - assemble
+      - test:
+          requires:
+            - assemble
       - build:
+          requires:
+            - assemble
+      - build_docker:
           requires:
             - test
           filters:
@@ -88,7 +154,7 @@ workflows:
                 - develop
       - deploy:
           requires:
-            - build
+            - build_docker
           filters:
             branches:
               # Disabled until CD-ready
