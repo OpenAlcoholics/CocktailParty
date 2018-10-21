@@ -2,6 +2,11 @@
 
 Database backend for the [OpenCocktail.party](http://OpenCocktail.party) database.
 
+The implemented API is specified with [OpenAPI](https://www.openapis.org/) in
+[the CockBot-OpenAPI repository](../CockBot-OpenAPI/OpenCocktail.yaml).
+It is served at [API.OpenCocktail.party](https://api.OpenCocktail.party),
+but keep in mind that no stable version (1.0+) has been released yet.
+
 ## Compilation
 
 Compile using [Gradle](https://gradle.org/) and Java 1.8:
