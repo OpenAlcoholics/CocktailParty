@@ -4,6 +4,8 @@ jobs:
     docker:
       - image: circleci/openjdk:8-jdk
     working_directory: ~/repo
+    environment:
+      GRADLE_OPTS: -Dorg.gradle.daemon=false
     steps:
       - checkout
       - run: git submodule sync
@@ -43,6 +45,8 @@ jobs:
           POSTGRES_PASSWORD: testpass # fuck it, I can't use env vars here
 
     working_directory: ~/repo
+    environment:
+      GRADLE_OPTS: -Dorg.gradle.daemon=false
 
     steps:
       - checkout
@@ -71,6 +75,8 @@ jobs:
       - image: circleci/openjdk:8-jdk
 
     working_directory: ~/repo
+    environment:
+      GRADLE_OPTS: -Dorg.gradle.daemon=false
 
     steps:
       - checkout
