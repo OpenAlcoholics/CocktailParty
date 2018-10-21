@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  assemble:
+  compile:
     docker:
       - image: circleci/openjdk:8-jdk
     working_directory: ~/repo
@@ -24,7 +24,7 @@ jobs:
             - ~/.gradle
           key: v1-dependencies-{{ checksum "build.gradle.kts" }}
 
-      - run: ./gradlew assemble
+      - run: ./gradlew classes
 
       - persist_to_workspace:
           root: .
@@ -87,7 +87,7 @@ jobs:
       - attach_workspace:
           at: .
 
-      - run: ./gradlew distZip -x check -x test
+      - run: ./gradlew assembleDist -x check -x test
       - store_artifacts:
           path: build/distributions/
           destination: distribution
@@ -118,12 +118,14 @@ jobs:
       # deploy the image
       - run: docker push openalcoholics/cocktailparty:latest-$CIRCLE_BRANCH
 
+
   deploy:
     docker:
       - image: byrnedo/alpine-curl:latest
     # Update server image
     steps:
       - run: curl -L "http://ec2-52-59-248-193.eu-central-1.compute.amazonaws.com:8080?key=$UPDATE_KEY"
+
 
   markdown_lint:
     docker:
@@ -137,13 +139,13 @@ workflows:
   do_everything:
     jobs:
       - markdown_lint
-      - assemble
+      - compile
       - test:
           requires:
-            - assemble
+            - compile
       - build:
           requires:
-            - assemble
+            - compile
       - build_docker:
           requires:
             - test
