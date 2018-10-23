@@ -1,4 +1,4 @@
-# CocktailParty ![CircleCI](https://img.shields.io/circleci/project/github/OpenAlcoholics/CocktailParty.svg) ![GitHub](https://img.shields.io/github/license/OpenAlcoholics/CocktailParty.svg) ![GitHub (pre-)release](https://img.shields.io/github/release/OpenAlcoholics/CocktailParty/all.svg)
+# CocktailParty [![CircleCI branch](https://img.shields.io/circleci/project/github/OpenAlcoholics/CocktailParty/develop.svg)](https://github.com/OpenAlcoholics/CocktailParty) ![GitHub](https://img.shields.io/github/license/OpenAlcoholics/CocktailParty.svg) ![GitHub (pre-)release](https://img.shields.io/github/release/OpenAlcoholics/CocktailParty/all.svg)
 
 Database backend for the [OpenCocktail.party](http://OpenCocktail.party) database.
 
