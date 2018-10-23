@@ -100,12 +100,14 @@ jobs:
 
 
   build_docker:
-    machine: true
+    docker:
+      - image: docker:18.06-git
     working_directory: ~/repo
     steps:
       - checkout
       - run: git submodule sync
       - run: git submodule update --init
+      - setup_remote_docker
 
       # Download and cache dependencies
       - restore_cache:
@@ -139,6 +141,7 @@ jobs:
     steps:
       - checkout
       - run: markdownlint README.md
+
 
 workflows:
   version: 2
