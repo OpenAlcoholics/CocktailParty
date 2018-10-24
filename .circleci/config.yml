@@ -148,10 +148,20 @@ workflows:
   do_everything:
     jobs:
       - markdown_lint
-      - compile
+      - compile:
+          filters:
+            branches:
+              only: /.*/
+            tags:
+              only: /.*/
       - test:
           requires:
             - compile
+          filters:
+            branches:
+              only: /.*/
+            tags:
+              only: /.*/
       - build:
           requires:
             - compile
