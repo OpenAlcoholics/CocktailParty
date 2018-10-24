@@ -1,0 +1,22 @@
+package group.openalcoholics.cocktailparty.db.dao
+
+import group.openalcoholics.cocktailparty.model.Glass
+import org.jdbi.v3.sqlobject.SqlObject
+
+interface GlassDao : SqlObject, BaseDao<Glass> {
+    fun search(query: String): List<Glass> = handle
+        .createQuery("""
+            SELECT * FROM $TABLE_NAME
+            WHERE LOWER(name) LIKE LOWER(CONCAT(\'%\', :q, \'%\'))
+        """)
+        .bind("q", query)
+        .mapTo(Glass::class.java)
+        .list()
+
+    companion object : BaseDaoCompanion {
+        const val TABLE_NAME = "glasses"
+        override val tableName: String
+            get() = TABLE_NAME
+        override val columns: List<String> = listOf("id", "name", "estimated_size", "image_link")
+    }
+}

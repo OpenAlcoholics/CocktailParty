@@ -1,0 +1,4 @@
+[submodule "src/main/resources/openapi"]
+	path = src/main/resources/openapi
+	url = https://github.com/OpenAlcoholics/CockBot-OpenAPI.git
+	branch = develop

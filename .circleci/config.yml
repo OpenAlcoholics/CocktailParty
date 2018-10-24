@@ -1,44 +1,175 @@
-# Java Gradle CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-java/ for more details
-#
 version: 2
 jobs:
-  build:
+  compile:
     docker:
-    # specify the version you desire here
-    - image: circleci/openjdk:8-jdk
+      - image: circleci/openjdk:8-jdk
+    working_directory: ~/repo
+    environment:
+      GRADLE_OPTS: -Dorg.gradle.daemon=false
+    steps:
+      - checkout
+      - run: git submodule sync
+      - run: git submodule update --init
+      - run: chmod +x gradlew
 
-    # Specify service dependencies here if necessary
-    # CircleCI maintains a library of pre-built images
-    # documented at https://circleci.com/docs/2.0/circleci-images/
-    # - image: circleci/postgres:9.4
+        # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "build.gradle.kts" }}
+              # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
+
+      - run: ./gradlew dependencies
+
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: v1-dependencies-{{ checksum "build.gradle.kts" }}
+
+      - run: ./gradlew classes
+
+      - persist_to_workspace:
+          root: .
+          paths:
+            - build
+            - buildSrc/build
+
+
+  test:
+    docker:
+      - image: circleci/openjdk:8-jdk
+      - image: circleci/postgres:10.5-alpine
+        environment:
+          POSTGRES_DB: cocktail_test
+          POSTGRES_USER: testuser
+          POSTGRES_PASSWORD: testpass # fuck it, I can't use env vars here
 
     working_directory: ~/repo
-
     environment:
-      # Customize the JVM maximum heap limit
-      JVM_OPTS: -Xmx3200m
+      GRADLE_OPTS: -Dorg.gradle.daemon=false
 
     steps:
-    - checkout
+      - checkout
+      - run: git submodule sync
+      - run: git submodule update --init
+      - run: chmod +x gradlew
 
-    # Download and cache dependencies
-    - restore_cache:
-        keys:
-        - v1-dependencies-{{ checksum "build.gradle.kts" }}
-        # fallback to using the latest cache if no exact match is found
-        - v1-dependencies-
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "build.gradle.kts" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
+      - attach_workspace:
+          at: .
 
-    - run: gradle dependencies
+      - run: ./gradlew flywayMigrate
+      - run: ./gradlew test
 
-    - save_cache:
-        paths:
-        - ~/.gradle
-        key: v1-dependencies-{{ checksum "build.gradle.kts" }}
+      - store_test_results:
+          path: build/test-results
 
-    # run tests!
-    - run: gradle test
 
-    - store_test_results:
-        path: build/test-results
+  build:
+    docker:
+      - image: circleci/openjdk:8-jdk
+
+    working_directory: ~/repo
+    environment:
+      GRADLE_OPTS: -Dorg.gradle.daemon=false
+
+    steps:
+      - checkout
+      - run: git submodule sync
+      - run: git submodule update --init
+      - run: chmod +x gradlew
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "build.gradle.kts" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
+      - attach_workspace:
+          at: .
+
+      - run: ./gradlew assembleDist -x check -x test
+      - store_artifacts:
+          path: build/distributions/
+          destination: distribution
+
+
+  build_docker:
+    docker:
+      - image: docker:18.06-git
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run: git submodule sync
+      - run: git submodule update --init
+      - setup_remote_docker
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "build.gradle.kts" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
+      - attach_workspace:
+          at: .
+
+      - run: docker login -u $DOCKER_USER -p $DOCKER_PASS
+
+      # build the application image
+      - run: docker build -t openalcoholics/cocktailparty:latest-$CIRCLE_BRANCH .
+
+      # deploy the image
+      - run: docker push openalcoholics/cocktailparty:latest-$CIRCLE_BRANCH
+
+
+  deploy:
+    docker:
+      - image: byrnedo/alpine-curl:latest
+    # Update server image
+    steps:
+      - run: curl -L "http://ec2-52-59-248-193.eu-central-1.compute.amazonaws.com:8080?key=$UPDATE_KEY"
+
+
+  markdown_lint:
+    docker:
+      - image: 06kellyjac/markdownlint-cli:0.13.0-alpine
+    steps:
+      - checkout
+      - run: markdownlint README.md
+
+
+workflows:
+  version: 2
+  do_everything:
+    jobs:
+      - markdown_lint
+      - compile
+      - test:
+          requires:
+            - compile
+      - build:
+          requires:
+            - compile
+      - build_docker:
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - master
+                - develop
+      - deploy:
+          requires:
+            - build_docker
+          filters:
+            branches:
+              # Disabled until CD-ready
+              # only:
+              #   - master
+              #   - develop
+              ignore: /.*/

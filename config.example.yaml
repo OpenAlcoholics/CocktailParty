@@ -1,0 +1,29 @@
+# This file contains all possible config keys and their default values.
+
+database:
+  # The host address of the postgres database server
+  host: localhost
+  # The database server port
+  port: 5432
+  # The name of the database
+  name: cocktail
+  # The database user
+  user:
+  # The database user's password
+  pass:
+
+api:
+  # The host address to bind to
+  host: 0.0.0.0
+  # The port to serve the API on
+  port: 8080
+
+auth:
+  # Base64 encoded public RSA key in the PEM format to authenticate JWTs
+  publicKey:
+  # Base64 encoded private RSA key in the PEM format to generate JWT tokens
+  privateKey:
+  # Whether to use sha-256, sha-384 or sha-512
+  sha: 256
+  # An arbitrary API key for the admin login endpoint
+  adminKey:
