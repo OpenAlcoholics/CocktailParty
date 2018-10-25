@@ -1,6 +1,6 @@
 # CocktailParty ![GitHub](https://img.shields.io/github/license/OpenAlcoholics/CocktailParty.svg) [![GitHub (pre-)release](https://img.shields.io/github/release/OpenAlcoholics/CocktailParty/all.svg)](https://github.com/OpenAlcoholics/CocktailParty/releases)
 
-[![CircleCI branch](https://img.shields.io/circleci/project/github/OpenAlcoholics/CocktailParty/develop.svg)](https://github.com/OpenAlcoholics/CocktailParty)
+[![CircleCI branch](https://img.shields.io/circleci/project/github/OpenAlcoholics/CocktailParty/develop.svg)](https://circleci.com/gh/OpenAlcoholics/CocktailParty/tree/develop)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/43614b273148471fa846c5b6bfc15c5d)](https://www.codacy.com/app/OpenAlcoholics/CocktailParty?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=OpenAlcoholics/CocktailParty&amp;utm_campaign=Badge_Grade)
 [![Maintainability](https://api.codeclimate.com/v1/badges/bb3f6f7f910572495b55/maintainability)](https://codeclimate.com/github/OpenAlcoholics/CocktailParty/maintainability)
 
