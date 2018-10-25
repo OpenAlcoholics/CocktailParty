@@ -18,17 +18,59 @@ import org.jdbi.v3.core.kotlin.withExtensionUnchecked
 import java.util.*
 import kotlin.reflect.KClass
 
+/**
+ * CRUD endpoint handler for a specific entity type.
+ */
 interface CrudHandler {
+
+    /**
+     * GET a single entity with an `id` path parameter.
+     *
+     * Response: 200 with entity body.
+     */
     fun get(ctx: RoutingContext)
+
+    /**
+     * POST a new entity (from the request body).
+     *
+     * Response: 201 with entity body.
+     */
     fun insert(ctx: RoutingContext)
+
+    /**
+     * PUT updated entity (from the request body), with `id` as path parameter.
+     *
+     * Response: 200 with entity body.
+     */
     fun update(ctx: RoutingContext)
+
+    /**
+     * DELETE entity based on `id` path parameter.
+     *
+     * Response: 204, no content.
+     */
     fun delete(ctx: RoutingContext)
 }
 
+/**
+ * Creates a default [CrudHandler] with the specified type parameters.
+ *
+ * This is a convenience function using reified method type parameters.
+ *
+ * @param jdbi a JDBI instance
+ */
 inline fun <reified T : BaseModel<T>, reified D : BaseDao<T>> defaultCrudHandler(
     jdbi: Jdbi): CrudHandler =
     defaultCrudHandler(T::class, D::class, jdbi)
 
+/**
+ * Creates a default [CrudHandler] with the specified type parameters.
+ *
+ * @param tClass the entity type
+ * @param dClass the DAO type for the entity
+ * @param jdbi a JDBI instance
+ * @return a default CrudHandler
+ */
 fun <T : BaseModel<T>, D : BaseDao<T>> defaultCrudHandler(tClass: KClass<T>, dClass: KClass<D>,
     jdbi: Jdbi): CrudHandler =
     DefaultCrudHandler(tClass, dClass, jdbi)

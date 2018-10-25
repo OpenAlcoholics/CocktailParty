@@ -18,6 +18,17 @@ interface AccessoryDao : SqlObject, BaseDao<Accessory> {
         .findFirst()
         .orElse(null)
 
+    /**
+     * Search for accessories by a search query and/or an accessory category.
+     *
+     * The columns that are included in the search by query remain unspecified.
+     *
+     * If no arguments are given, all accessories are returned.
+     *
+     * @param query a search query
+     * @param category a accessory category ID
+     * @return a list of matching accessories
+     */
     fun search(query: String?, category: Int?): List<Accessory> = handle
         .createQuery("""
             SELECT $LOCAL_HEAD,

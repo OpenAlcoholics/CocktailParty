@@ -4,6 +4,14 @@ import group.openalcoholics.cocktailparty.model.IngredientCategory
 import org.jdbi.v3.sqlobject.SqlObject
 
 interface IngredientCategoryDao : SqlObject, BaseDao<IngredientCategory> {
+    /**
+     * Search for ingredient categories by a search query.
+     *
+     * The columns that are included in the search remain unspecified.
+     *
+     * @param query a search query
+     * @return a list of matching categories
+     */
     fun search(query: String): List<IngredientCategory> = handle
         .createQuery("""
             SELECT * FROM $TABLE_NAME
