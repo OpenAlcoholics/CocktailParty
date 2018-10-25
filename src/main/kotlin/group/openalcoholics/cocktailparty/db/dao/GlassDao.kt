@@ -4,6 +4,14 @@ import group.openalcoholics.cocktailparty.model.Glass
 import org.jdbi.v3.sqlobject.SqlObject
 
 interface GlassDao : SqlObject, BaseDao<Glass> {
+    /**
+     * Search for glasses by a search query.
+     *
+     * The columns that are included in the search remain unspecified.
+     *
+     * @param query a search query
+     * @return a list of matching glasses
+     */
     fun search(query: String): List<Glass> = handle
         .createQuery("""
             SELECT * FROM $TABLE_NAME

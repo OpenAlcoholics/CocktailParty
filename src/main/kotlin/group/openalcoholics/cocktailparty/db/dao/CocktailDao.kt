@@ -50,6 +50,17 @@ interface CocktailDao : SqlObject, BaseDao<Cocktail> {
         }
         ?.transferFromMutable()
 
+    /**
+     * Search for cocktails by a search query and/or a cocktail category.
+     *
+     * The columns that are included in the search by query remain unspecified.
+     *
+     * If no arguments are given, all cocktails are returned.
+     *
+     * @param query a search query
+     * @param category a cocktail category ID
+     * @return a list of matching cocktails
+     */
     fun search(query: String?, category: Int?): List<Cocktail> = handle
         .createQuery("""
             SELECT $LOCAL_HEAD,
