@@ -4,7 +4,7 @@ object Version {
     const val CFG4K = "0.9.0"
     const val KOTLIN_LOGGING = "1.6.10"
     const val SLF4J = "1.7.25"
-    const val GUAVA = "26.0-jre"
+    const val GUAVA = "27.0-jre"
     const val GUICE = "4.2.1"
 
     const val VERTX = "3.5.4"
