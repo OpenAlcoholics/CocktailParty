@@ -39,6 +39,8 @@ dependencies {
     // Config
     implementation(group = "com.jdiazcano.cfg4k", name = "cfg4k-core", version = Version.CFG4K)
     implementation(group = "com.jdiazcano.cfg4k", name = "cfg4k-yaml", version = Version.CFG4K)
+    // Needed by CFG4K, explicitly depending on it to include the correct version
+    implementation(kotlin("reflect"))
 
     // Vertx
     implementation(group = "io.vertx", name = "vertx-web-api-contract", version = Version.VERTX)
