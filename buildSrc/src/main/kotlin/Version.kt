@@ -13,9 +13,11 @@ object Version {
     const val FLYWAY = "5.2.0"
     const val JDBI = "3.5.1"
     const val HIKARI_CP = "3.2.0"
-    const val JACKSON = "2.9.+"
+    const val JACKSON = "2.9.7"
     const val POSTGRESQL = "42.2.5"
 
     const val JUNIT = "5.3.1"
     const val JUNIT_GUICE = "1.1.0"
+    const val MOCK_K = "1.8.10.kotlin13"
+    const val ASSERT_J = "3.11.1"
 }

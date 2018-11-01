@@ -72,11 +72,12 @@ dependencies {
         group = "org.junit.jupiter",
         name = "junit-jupiter-engine",
         version = Version.JUNIT)
-    testImplementation(kotlin("test-junit5"))
     testImplementation(
         group = "name.falgout.jeffrey.testing.junit5",
         name = "guice-extension",
         version = Version.JUNIT_GUICE)
+    testImplementation(group = "io.mockk", name = "mockk", version = Version.MOCK_K)
+    testImplementation(group = "org.assertj", name = "assertj-core", version = Version.ASSERT_J)
 }
 
 buildscript {
