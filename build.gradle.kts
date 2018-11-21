@@ -66,13 +66,13 @@ dependencies {
         version = Version.JACKSON)
 
     // Testing
-    testImplementation(
+    testRuntime(
         group = "org.junit.jupiter",
-        name = "junit-jupiter-api",
+        name = "junit-jupiter-engine",
         version = Version.JUNIT)
     testImplementation(
         group = "org.junit.jupiter",
-        name = "junit-jupiter-engine",
+        name = "junit-jupiter-api",
         version = Version.JUNIT)
     testImplementation(
         group = "name.falgout.jeffrey.testing.junit5",
