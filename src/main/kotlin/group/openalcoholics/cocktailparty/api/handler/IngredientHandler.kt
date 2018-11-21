@@ -1,7 +1,6 @@
 package group.openalcoholics.cocktailparty.api.handler
 
 import group.openalcoholics.cocktailparty.api.HandlerController
-import group.openalcoholics.cocktailparty.api.InternalServerError
 import group.openalcoholics.cocktailparty.api.end
 import group.openalcoholics.cocktailparty.db.dao.IngredientDao
 import group.openalcoholics.cocktailparty.model.Ingredient
@@ -11,8 +10,9 @@ import io.vertx.ext.web.api.contract.openapi3.OpenAPI3RouterFactory
 import mu.KotlinLogging
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.withExtensionUnchecked
+import javax.inject.Inject
 
-class IngredientHandler(private val jdbi: Jdbi) : HandlerController,
+class IngredientHandler @Inject constructor(private val jdbi: Jdbi) : HandlerController,
     CrudHandler by defaultCrudHandler<Ingredient, IngredientDao>(jdbi) {
 
     private val logger = KotlinLogging.logger { }

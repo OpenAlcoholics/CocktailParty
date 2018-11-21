@@ -3,8 +3,9 @@ package group.openalcoholics.cocktailparty.api.handler
 import group.openalcoholics.cocktailparty.module.AuthConfig
 import io.vertx.core.Handler
 import io.vertx.ext.web.RoutingContext
+import javax.inject.Inject
 
-class AdminSecurityHandler(authConfig: AuthConfig) : Handler<RoutingContext> {
+class AdminSecurityHandler @Inject constructor(authConfig: AuthConfig) : Handler<RoutingContext> {
 
     private val key = authConfig.adminKey
 

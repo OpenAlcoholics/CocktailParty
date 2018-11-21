@@ -10,8 +10,9 @@ import io.vertx.ext.web.api.contract.openapi3.OpenAPI3RouterFactory
 import mu.KotlinLogging
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.withExtensionUnchecked
+import javax.inject.Inject
 
-class GlassHandler(private val jdbi: Jdbi) : HandlerController,
+class GlassHandler @Inject constructor(private val jdbi: Jdbi) : HandlerController,
     CrudHandler by defaultCrudHandler<Glass, GlassDao>(jdbi) {
 
     private val logger = KotlinLogging.logger { }

@@ -1,7 +1,6 @@
 package group.openalcoholics.cocktailparty.api.handler
 
 import group.openalcoholics.cocktailparty.api.HandlerController
-import group.openalcoholics.cocktailparty.api.InternalServerError
 import group.openalcoholics.cocktailparty.api.NotFoundException
 import group.openalcoholics.cocktailparty.api.Status
 import group.openalcoholics.cocktailparty.api.bodyAs
@@ -20,8 +19,9 @@ import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.useHandleUnchecked
 import org.jdbi.v3.core.kotlin.withExtensionUnchecked
 import java.util.*
+import javax.inject.Inject
 
-class CocktailHandler(private val jdbi: Jdbi) : HandlerController,
+class CocktailHandler @Inject constructor(private val jdbi: Jdbi) : HandlerController,
     CrudHandler by defaultCrudHandler<Cocktail, CocktailDao>(jdbi) {
 
     private val logger = KotlinLogging.logger { }

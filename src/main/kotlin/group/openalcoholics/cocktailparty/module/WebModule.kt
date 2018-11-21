@@ -6,12 +6,6 @@ import com.google.inject.Singleton
 import com.jdiazcano.cfg4k.providers.ConfigProvider
 import com.jdiazcano.cfg4k.providers.bind
 import group.openalcoholics.cocktailparty.api.handler.AuthConfigurationException
-import group.openalcoholics.cocktailparty.api.handler.CocktailCategoryHandler
-import group.openalcoholics.cocktailparty.api.handler.CocktailHandler
-import group.openalcoholics.cocktailparty.api.handler.GlassHandler
-import group.openalcoholics.cocktailparty.api.handler.IngredientCategoryHandler
-import group.openalcoholics.cocktailparty.api.handler.IngredientHandler
-import group.openalcoholics.cocktailparty.api.handler.VersionHandler
 import io.vertx.core.Vertx
 import io.vertx.ext.auth.jwt.JWTAuth
 import io.vertx.kotlin.ext.auth.PubSecKeyOptions
@@ -31,30 +25,6 @@ class WebModule : AbstractModule() {
     @Provides
     @Singleton
     fun provideAuthConfig(provider: ConfigProvider) = provider.bind<AuthConfig>("auth")
-
-    @Provides
-    @Singleton
-    fun provideVersionHandler() = VersionHandler()
-
-    @Provides
-    @Singleton
-    fun provideGlassHandler(jdbi: Jdbi) = GlassHandler(jdbi)
-
-    @Provides
-    @Singleton
-    fun provideIngredientCategoryHandler(jdbi: Jdbi) = IngredientCategoryHandler(jdbi)
-
-    @Provides
-    @Singleton
-    fun provideCocktailHandler(jdbi: Jdbi) = CocktailHandler(jdbi)
-
-    @Provides
-    @Singleton
-    fun provideCocktailCategoryHandler(jdbi: Jdbi) = CocktailCategoryHandler(jdbi)
-
-    @Provides
-    @Singleton
-    fun provideIngredientHandler(jdbi: Jdbi) = IngredientHandler(jdbi)
 
     @Provides
     @Singleton

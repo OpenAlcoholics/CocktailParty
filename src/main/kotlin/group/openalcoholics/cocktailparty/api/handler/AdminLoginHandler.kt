@@ -9,11 +9,12 @@ import io.vertx.kotlin.core.json.json
 import io.vertx.kotlin.core.json.obj
 import io.vertx.kotlin.ext.jwt.JWTOptions
 import java.util.*
+import javax.inject.Inject
 
 /**
  * Temporary login endpoint with a hardcoded password.
  */
-class AdminLoginHandler(
+class AdminLoginHandler @Inject constructor(
     private val jwtAuth: JWTAuth,
     private val authConfig: AuthConfig) : HandlerController {
 
