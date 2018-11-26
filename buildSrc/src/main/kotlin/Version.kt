@@ -10,7 +10,7 @@ object Version {
     const val VERTX = "3.5.4"
     const val VERTX_GUICE = "2.3.1"
 
-    const val FLYWAY = "5.2.0"
+    const val FLYWAY = "5.2.3"
     const val JDBI = "3.5.1"
     const val HIKARI_CP = "3.2.0"
     const val JACKSON = "2.9.7"
