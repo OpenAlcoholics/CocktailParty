@@ -38,6 +38,7 @@ gradle-app.setting
 .idea_modules/
 .idea/
 out/
+*.iml
 
 # Vertx
 .vertx
