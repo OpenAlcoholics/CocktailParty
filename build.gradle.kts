@@ -7,6 +7,7 @@ import com.jdiazcano.cfg4k.providers.getOrNull
 import com.jdiazcano.cfg4k.sources.ClasspathConfigSource
 import com.jdiazcano.cfg4k.sources.FileConfigSource
 import com.jdiazcano.cfg4k.yaml.YamlConfigLoader
+import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -101,21 +102,20 @@ val processResources by tasks.getting(ProcessResources::class) {
     }
 }
 
-val compileKotlin by tasks.getting(KotlinCompile::class) {
-    kotlinOptions.jvmTarget = "1.8"
-}
-val compileTestKotlin by tasks.getting(KotlinCompile::class) {
-    kotlinOptions.jvmTarget = "1.8"
-}
+tasks {
+    withType(KotlinCompile::class) {
+        kotlinOptions.jvmTarget = "1.8"
+    }
 
-val test by tasks.getting(org.gradle.api.tasks.testing.Test::class) {
-    useJUnitPlatform()
-}
+    "test"(Test::class) {
+        useJUnitPlatform()
+    }
 
-val dokka by tasks.getting(org.jetbrains.dokka.gradle.DokkaTask::class) {
-    // TODO maybe switch to javadoc (or another) format
-    outputFormat = "html"
-    outputDirectory = "$buildDir/javadoc"
+    "dokka"(DokkaTask::class) {
+        // TODO maybe switch to javadoc (or another) format
+        outputFormat = "html"
+        outputDirectory = "$buildDir/javadoc"
+    }
 }
 
 fun configProvider(): ConfigProvider {
