@@ -5,7 +5,7 @@ object Version {
     const val KOTLIN_LOGGING = "1.6.10"
     const val SLF4J = "1.7.25"
     const val GUAVA = "27.0-jre"
-    const val GUICE = "4.2.1"
+    const val GUICE = "4.2.2"
 
     const val VERTX = "3.5.4"
     const val VERTX_GUICE = "2.3.1"
