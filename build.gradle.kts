@@ -12,13 +12,13 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     application
-    kotlin("jvm") version Version.KOTLIN
-    id("org.jetbrains.dokka") version Version.DOKKA
+    kotlin("jvm") version Plugin.KOTLIN
+    id("org.jetbrains.dokka") version Plugin.DOKKA
     idea
 
-    id("org.flywaydb.flyway") version Version.FLYWAY
+    id("org.flywaydb.flyway") version Plugin.FLYWAY
 
-    id("com.github.ben-manes.versions") version Version.VERSIONS
+    id("com.github.ben-manes.versions") version Plugin.VERSIONS
 }
 
 application {
@@ -33,56 +33,56 @@ dependencies {
     implementation(
         group = "io.github.microutils",
         name = "kotlin-logging",
-        version = Version.KOTLIN_LOGGING)
-    implementation(group = "org.slf4j", name = "jul-to-slf4j", version = Version.SLF4J)
-    implementation(group = "org.slf4j", name = "slf4j-simple", version = Version.SLF4J)
-    implementation(group = "com.google.guava", name = "guava", version = Version.GUAVA)
-    implementation(group = "com.google.inject", name = "guice", version = Version.GUICE)
+        version = Lib.KOTLIN_LOGGING)
+    implementation(group = "org.slf4j", name = "jul-to-slf4j", version = Lib.SLF4J)
+    implementation(group = "org.slf4j", name = "slf4j-simple", version = Lib.SLF4J)
+    implementation(group = "com.google.guava", name = "guava", version = Lib.GUAVA)
+    implementation(group = "com.google.inject", name = "guice", version = Lib.GUICE)
 
     // Config
-    implementation(group = "com.jdiazcano.cfg4k", name = "cfg4k-core", version = Version.CFG4K)
-    implementation(group = "com.jdiazcano.cfg4k", name = "cfg4k-yaml", version = Version.CFG4K)
+    implementation(group = "com.jdiazcano.cfg4k", name = "cfg4k-core", version = Lib.CFG4K)
+    implementation(group = "com.jdiazcano.cfg4k", name = "cfg4k-yaml", version = Lib.CFG4K)
     // Needed by CFG4K, explicitly depending on it to include the correct version
-    implementation(kotlin("reflect", Version.KOTLIN))
+    implementation(kotlin("reflect", Lib.KOTLIN))
 
     // Vertx
-    implementation(group = "io.vertx", name = "vertx-web-api-contract", version = Version.VERTX)
-    implementation(group = "io.vertx", name = "vertx-lang-kotlin", version = Version.VERTX) {
+    implementation(group = "io.vertx", name = "vertx-web-api-contract", version = Lib.VERTX)
+    implementation(group = "io.vertx", name = "vertx-lang-kotlin", version = Lib.VERTX) {
         exclude(group = "org.jetbrains.kotlin")
     }
-    implementation(group = "io.vertx", name = "vertx-auth-jwt", version = Version.VERTX)
+    implementation(group = "io.vertx", name = "vertx-auth-jwt", version = Lib.VERTX)
     implementation(
         group = "com.englishtown.vertx",
         name = "vertx-guice",
-        version = Version.VERTX_GUICE)
+        version = Lib.VERTX_GUICE)
 
     // Database
-    implementation(group = "org.flywaydb", name = "flyway-core", version = Version.FLYWAY)
-    implementation(group = "org.jdbi", name = "jdbi3-core", version = Version.JDBI)
-    implementation(group = "org.jdbi", name = "jdbi3-kotlin", version = Version.JDBI)
-    implementation(group = "org.jdbi", name = "jdbi3-postgres", version = Version.JDBI)
-    implementation(group = "org.jdbi", name = "jdbi3-kotlin-sqlobject", version = Version.JDBI)
-    implementation(group = "com.zaxxer", name = "HikariCP", version = Version.HIKARI_CP)
+    implementation(group = "org.flywaydb", name = "flyway-core", version = Lib.FLYWAY)
+    implementation(group = "org.jdbi", name = "jdbi3-core", version = Lib.JDBI)
+    implementation(group = "org.jdbi", name = "jdbi3-kotlin", version = Lib.JDBI)
+    implementation(group = "org.jdbi", name = "jdbi3-postgres", version = Lib.JDBI)
+    implementation(group = "org.jdbi", name = "jdbi3-kotlin-sqlobject", version = Lib.JDBI)
+    implementation(group = "com.zaxxer", name = "HikariCP", version = Lib.HIKARI_CP)
     implementation(
         group = "com.fasterxml.jackson.module",
         name = "jackson-module-kotlin",
-        version = Version.JACKSON)
+        version = Lib.JACKSON)
 
     // Testing
     testRuntime(
         group = "org.junit.jupiter",
         name = "junit-jupiter-engine",
-        version = Version.JUNIT)
+        version = Lib.JUNIT)
     testImplementation(
         group = "org.junit.jupiter",
         name = "junit-jupiter-api",
-        version = Version.JUNIT)
+        version = Lib.JUNIT)
     testImplementation(
         group = "name.falgout.jeffrey.testing.junit5",
         name = "guice-extension",
-        version = Version.JUNIT_GUICE)
-    testImplementation(group = "io.mockk", name = "mockk", version = Version.MOCK_K)
-    testImplementation(group = "org.assertj", name = "assertj-core", version = Version.ASSERT_J)
+        version = Lib.JUNIT_GUICE)
+    testImplementation(group = "io.mockk", name = "mockk", version = Lib.MOCK_K)
+    testImplementation(group = "org.assertj", name = "assertj-core", version = Lib.ASSERT_J)
 }
 
 buildscript {
@@ -90,9 +90,9 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath(group = "com.jdiazcano.cfg4k", name = "cfg4k-core", version = Version.CFG4K)
-        classpath(group = "com.jdiazcano.cfg4k", name = "cfg4k-yaml", version = Version.CFG4K)
-        classpath(group = "org.postgresql", name = "postgresql", version = Version.POSTGRESQL)
+        classpath(group = "com.jdiazcano.cfg4k", name = "cfg4k-core", version = Lib.CFG4K)
+        classpath(group = "com.jdiazcano.cfg4k", name = "cfg4k-yaml", version = Lib.CFG4K)
+        classpath(group = "org.postgresql", name = "postgresql", version = Lib.POSTGRESQL)
     }
 }
 
