@@ -87,7 +87,7 @@ class Api @Inject constructor(
                     port = apiConfig.port
                 }
                 val server = vertx.createHttpServer(serverOptions)
-                server.requestHandler { router.accept(it) }.listen()
+                server.requestHandler(router).listen()
                 startFuture.complete()
             } else {
                 // Something went wrong during router factory initialization
