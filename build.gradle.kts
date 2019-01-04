@@ -17,6 +17,8 @@ plugins {
     idea
 
     id("org.flywaydb.flyway") version Version.FLYWAY
+
+    id("com.github.ben-manes.versions") version Version.VERSIONS
 }
 
 application {
