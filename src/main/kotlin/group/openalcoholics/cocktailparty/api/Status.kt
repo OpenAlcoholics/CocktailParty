@@ -4,7 +4,7 @@ import group.openalcoholics.cocktailparty.model.AuthExpectation
 import io.vertx.core.http.HttpServerResponse
 
 /**
- * An HTTP response status code.
+ * A HTTP response status code.
  * @param code the actual HTTP code
  */
 enum class Status(val code: Int) {
