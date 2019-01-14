@@ -7,6 +7,7 @@ import com.jdiazcano.cfg4k.providers.getOrNull
 import com.jdiazcano.cfg4k.sources.ClasspathConfigSource
 import com.jdiazcano.cfg4k.sources.FileConfigSource
 import com.jdiazcano.cfg4k.yaml.YamlConfigLoader
+import org.flywaydb.gradle.task.FlywayMigrateTask
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -96,15 +97,15 @@ buildscript {
     }
 }
 
-val processResources by tasks.getting(ProcessResources::class) {
-    filesMatching("**/version.properties") {
-        filter {
-            it.replace("%APP_VERSION%", version.toString())
+tasks {
+    "processResources"(ProcessResources::class) {
+        filesMatching("**/version.properties") {
+            filter {
+                it.replace("%APP_VERSION%", version.toString())
+            }
         }
     }
-}
 
-tasks {
     withType(KotlinCompile::class) {
         kotlinOptions.jvmTarget = "1.8"
     }
@@ -118,8 +119,18 @@ tasks {
         outputFormat = "html"
         outputDirectory = "$buildDir/javadoc"
     }
+
+    create<FlywayMigrateTask>("flywayMigrateWithMock") {
+        locations = arrayOf(
+            "filesystem:src/main/resources/openapi/sql",
+            "filesystem:src/main/resources/openapi/mockSql"
+        )
+    }
 }
 
+/**
+ * Gets a [ConfigProvider] instance for executing Flyway migrations with Gradle.
+ */
 fun configProvider(): ConfigProvider {
     val envLoader = EnvironmentConfigLoader()
     val envProvider = DefaultConfigProvider(envLoader)
