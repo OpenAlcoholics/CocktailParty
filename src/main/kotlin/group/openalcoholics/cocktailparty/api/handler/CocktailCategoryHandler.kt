@@ -28,8 +28,8 @@ class CocktailCategoryHandler @Inject constructor(private val jdbi: Jdbi) : Hand
 
     private fun search(ctx: RoutingContext) {
         val query = ctx.queryParam("q").first()!!
-        val limit = ctx.queryParam("limit").first().toInt()
-        val offset = ctx.queryParam("offset").first().toInt()
+        val limit = ctx.queryParam("limit").firstOrNull()?.toInt() ?: 40
+        val offset = ctx.queryParam("offset").firstOrNull()?.toInt() ?: 0
         ctx.vertx().executeBlocking({ future: Future<List<CocktailCategory>> ->
             future.complete(jdbi.withExtensionUnchecked(CocktailCategoryDao::class) {
                 it.search(query, limit, offset)

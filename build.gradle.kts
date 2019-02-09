@@ -4,7 +4,6 @@ import com.jdiazcano.cfg4k.providers.ConfigProvider
 import com.jdiazcano.cfg4k.providers.DefaultConfigProvider
 import com.jdiazcano.cfg4k.providers.OverrideConfigProvider
 import com.jdiazcano.cfg4k.providers.getOrNull
-import com.jdiazcano.cfg4k.sources.ClasspathConfigSource
 import com.jdiazcano.cfg4k.sources.FileConfigSource
 import com.jdiazcano.cfg4k.yaml.YamlConfigLoader
 import org.flywaydb.gradle.task.FlywayMigrateTask

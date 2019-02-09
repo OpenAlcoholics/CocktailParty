@@ -27,8 +27,8 @@ class GlassHandler @Inject constructor(private val jdbi: Jdbi) : HandlerControll
 
     private fun search(ctx: RoutingContext) {
         val query = ctx.queryParam("q").firstOrNull()
-        val limit = ctx.queryParam("limit").first().toInt()
-        val offset = ctx.queryParam("offset").first().toInt()
+        val limit = ctx.queryParam("limit").firstOrNull()?.toInt() ?: 40
+        val offset = ctx.queryParam("offset").firstOrNull()?.toInt() ?: 0
         ctx.vertx().executeBlocking({ future: Future<List<Glass>> ->
             future.complete(jdbi.withExtensionUnchecked(GlassDao::class) {
                 it.search(query, limit, offset)
