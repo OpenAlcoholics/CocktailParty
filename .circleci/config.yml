@@ -52,7 +52,7 @@ jobs:
     # We also want postgres for this one
     docker:
       - image: circleci/openjdk:8-jdk
-      - image: circleci/postgres:10.5-alpine
+      - image: postgres:10-alpine
         environment:
           POSTGRES_DB: cocktail_test
           POSTGRES_USER: testuser
