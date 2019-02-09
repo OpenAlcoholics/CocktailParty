@@ -12,12 +12,12 @@ interface AccessoryCategoryDao : SqlObject, BaseDao<AccessoryCategory> {
      * @param query a search query
      * @return a list of matching accessory categories
      */
-    fun search(query: String): List<AccessoryCategory> = handle
+    fun search(query: String?): List<AccessoryCategory> = handle
         .createQuery("""
             SELECT * FROM $TABLE_NAME
-            WHERE LOWER(name) LIKE LOWER(CONCAT(\'%\', :q, \'%\'))
+            ${if (query == null) "" else "WHERE LOWER(name) LIKE LOWER(CONCAT(\'%\', :q, \'%\'))"}
         """)
-        .bind("q", query)
+        .apply { if (query != null) bind("q", query) }
         .mapTo(AccessoryCategory::class.java)
         .list()
 

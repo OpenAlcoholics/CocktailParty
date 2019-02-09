@@ -26,7 +26,7 @@ class IngredientCategoryHandler @Inject constructor(private val jdbi: Jdbi) : Ha
     }
 
     private fun search(ctx: RoutingContext) {
-        val query = ctx.queryParam("q").first()
+        val query = ctx.queryParam("q").firstOrNull()
         ctx.vertx().executeBlocking({ future: Future<List<IngredientCategory>> ->
             future.complete(jdbi.withExtensionUnchecked(IngredientCategoryDao::class) {
                 it.search(query)

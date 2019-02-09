@@ -12,12 +12,12 @@ interface IngredientCategoryDao : SqlObject, BaseDao<IngredientCategory> {
      * @param query a search query
      * @return a list of matching categories
      */
-    fun search(query: String): List<IngredientCategory> = handle
+    fun search(query: String?): List<IngredientCategory> = handle
         .createQuery("""
             SELECT * FROM $TABLE_NAME
-            WHERE LOWER(name) LIKE LOWER(CONCAT(\'%\', :q, \'%\'))
+            ${if (query == null) "" else "WHERE LOWER(name) LIKE LOWER(CONCAT(\'%\', :q, \'%\'))"}
         """)
-        .bind("q", query)
+        .apply { if (query != null) bind("q", query) }
         .mapTo(IngredientCategory::class.java)
         .list()
 
