@@ -149,7 +149,7 @@ jobs:
 
 workflows:
   version: 2
-  do_everything:
+  full_workflow:
     jobs:
       - markdown_lint
       - compile:
