@@ -28,9 +28,11 @@ class IngredientHandler @Inject constructor(private val jdbi: Jdbi) : HandlerCon
     private fun search(ctx: RoutingContext) {
         val query = ctx.queryParam("q").firstOrNull()
         val category = ctx.queryParam("category").firstOrNull()?.toInt()
+        val limit = ctx.queryParam("limit").first().toInt()
+        val offset = ctx.queryParam("offset").first().toInt()
         ctx.vertx().executeBlocking({ future: Future<List<Ingredient>> ->
             future.complete(jdbi.withExtensionUnchecked(IngredientDao::class) {
-                it.search(query, category)
+                it.search(query, category, limit, offset)
             })
         }, { result ->
             if (result.succeeded()) ctx.response().end(result.result())

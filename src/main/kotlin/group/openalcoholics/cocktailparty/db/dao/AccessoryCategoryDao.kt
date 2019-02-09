@@ -10,12 +10,16 @@ interface AccessoryCategoryDao : SqlObject, BaseDao<AccessoryCategory> {
      * The columns that are included in the search remain unspecified.
      *
      * @param query a search query
+     * @param limit maximum result size
+     * @param offset result offset
      * @return a list of matching accessory categories
      */
-    fun search(query: String?): List<AccessoryCategory> = handle
+    fun search(query: String?, limit: Int, offset: Int): List<AccessoryCategory> = handle
         .createQuery("""
             SELECT * FROM $TABLE_NAME
             ${if (query == null) "" else "WHERE LOWER(name) LIKE LOWER(CONCAT(\'%\', :q, \'%\'))"}
+            LIMIT $limit
+            OFFSET $offset
         """)
         .apply { if (query != null) bind("q", query) }
         .mapTo(AccessoryCategory::class.java)

@@ -62,9 +62,11 @@ interface CocktailDao : SqlObject, BaseDao<Cocktail> {
      *
      * @param query a search query
      * @param category a cocktail category ID
+     * @param limit maximum result size
+     * @param offset result offset
      * @return a list of matching cocktails
      */
-    fun search(query: String?, category: Int?): List<Cocktail> = handle
+    fun search(query: String?, category: Int?, limit: Int, offset: Int): List<Cocktail> = handle
         .createQuery("""
             SELECT $LOCAL_HEAD,
                 ${CocktailCategoryDao.head("${CocktailCategoryDao.TABLE_NAME}.")},
@@ -86,6 +88,8 @@ interface CocktailDao : SqlObject, BaseDao<Cocktail> {
                 ON ${RecipeDao.TABLE_NAME}.cocktail_id = $TABLE_NAME.id
             LEFT JOIN ${CocktailAccessoryCategoryDao.TABLE_NAME}
                 ON ${CocktailAccessoryCategoryDao.TABLE_NAME}.cocktail_id = $TABLE_NAME.id
+            LIMIT $limit
+            OFFSET $offset
         """).apply {
             if (query != null) bind("q", query)
             if (category != null) bind("category", category)

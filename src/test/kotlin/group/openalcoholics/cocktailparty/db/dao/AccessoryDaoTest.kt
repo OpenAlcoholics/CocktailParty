@@ -62,7 +62,7 @@ class AccessoryDaoTest @Inject constructor(private val jdbi: Jdbi) : BaseDaoTest
         .map { (query, category, expectedSize) ->
             DynamicTest.dynamicTest("""Search for "$query" in category $category""") {
                 val result = jdbi.withExtensionUnchecked(AccessoryDao::class) {
-                    it.search(query, category)
+                    it.search(query, category, 40, 0)
                 }
                 assertEquals(expectedSize, result.size)
             }
@@ -77,7 +77,7 @@ class AccessoryDaoTest @Inject constructor(private val jdbi: Jdbi) : BaseDaoTest
         .map { (query, category) ->
             DynamicTest.dynamicTest("""Search for "$query"""") {
                 val result = jdbi.withExtensionUnchecked(AccessoryDao::class) {
-                    it.search(query, category)
+                    it.search(query, category, 40, 0)
                 }
                 assertEquals(emptyList(), result)
             }

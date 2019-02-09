@@ -100,7 +100,7 @@ class CocktailDaoTest @Inject constructor(private val jdbi: Jdbi) : BaseDaoTest<
             DynamicTest.dynamicTest(
                 """Search for "$query" in category $category""") {
                 val result = jdbi.withExtensionUnchecked(CocktailDao::class) {
-                    it.search(query, category)
+                    it.search(query, category, 40, 0)
                 }
                 assertEquals(expectedSize, result.size, Json.encodePrettily(result))
                 for (cocktail in result) {
@@ -124,7 +124,7 @@ class CocktailDaoTest @Inject constructor(private val jdbi: Jdbi) : BaseDaoTest<
             DynamicTest.dynamicTest(
                 """Search for "$query, category=$category"""") {
                 val result = jdbi.withExtensionUnchecked(CocktailDao::class) {
-                    it.search(query, category)
+                    it.search(query, category, 40, 0)
                 }
                 assertEquals(emptyList(), result)
             }

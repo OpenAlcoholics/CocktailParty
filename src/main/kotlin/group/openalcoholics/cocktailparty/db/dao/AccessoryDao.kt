@@ -27,9 +27,11 @@ interface AccessoryDao : SqlObject, BaseDao<Accessory> {
      *
      * @param query a search query
      * @param category a accessory category ID
+     * @param limit maximum result size
+     * @param offset result offset
      * @return a list of matching accessories
      */
-    fun search(query: String?, category: Int?): List<Accessory> = handle
+    fun search(query: String?, category: Int?, limit: Int, offset: Int): List<Accessory> = handle
         .createQuery("""
             SELECT $LOCAL_HEAD,
                 ${AccessoryCategoryDao.head("${AccessoryCategoryDao.TABLE_NAME}.")}
@@ -40,6 +42,8 @@ interface AccessoryDao : SqlObject, BaseDao<Accessory> {
                 ${if (query == null) "" else "AND LOWER($TABLE_NAME.name) LIKE LOWER(CONCAT(\'%\', :q, \'%\'))"}
                 ${if (category == null) "" else "AND $TABLE_NAME.category_id = :category"}
             )
+            LIMIT $limit
+            OFFSET $offset
             """)
         .apply {
             if (query != null) bind("q", query)

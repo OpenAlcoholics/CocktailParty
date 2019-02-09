@@ -46,7 +46,7 @@ class AccessoryCategoryDaoTest @Inject constructor(private val jdbi: Jdbi) :
         .map { (query, count) ->
             DynamicTest.dynamicTest("""Search for "$query"""") {
                 val result = jdbi.withExtensionUnchecked(AccessoryCategoryDao::class) {
-                    it.search(query)
+                    it.search(query, 40, 0)
                 }
                 assertEquals(count, result.size)
             }
@@ -57,7 +57,7 @@ class AccessoryCategoryDaoTest @Inject constructor(private val jdbi: Jdbi) :
         .map { query ->
             DynamicTest.dynamicTest("""Search for "$query"""") {
                 val result = jdbi.withExtensionUnchecked(AccessoryCategoryDao::class) {
-                    it.search(query)
+                    it.search(query, 40, 0)
                 }
                 assertEquals(emptyList(), result)
             }

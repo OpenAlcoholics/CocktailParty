@@ -28,9 +28,11 @@ interface IngredientDao : SqlObject, BaseDao<Ingredient> {
      *
      * @param query a search query
      * @param category a ingredient category ID
+     * @param limit maximum result size
+     * @param offset result offset
      * @return a list of matching ingredients
      */
-    fun search(query: String?, category: Int?): List<Ingredient> = handle
+    fun search(query: String?, category: Int?, limit: Int, offset: Int): List<Ingredient> = handle
         .createQuery("""
             SELECT $LOCAL_HEAD,
                 ${IngredientCategoryDao.head("${IngredientCategoryDao.TABLE_NAME}.")}
@@ -41,6 +43,8 @@ interface IngredientDao : SqlObject, BaseDao<Ingredient> {
                 ${if (query == null) "" else "AND LOWER($TABLE_NAME.name) LIKE LOWER(CONCAT(\'%\', :q, \'%\'))"}
                 ${if (category == null) "" else "AND $TABLE_NAME.category_id = :category"}
             )
+            LIMIT $limit
+            OFFSET $offset
         """)
         .apply {
             if (query != null) bind("q", query)

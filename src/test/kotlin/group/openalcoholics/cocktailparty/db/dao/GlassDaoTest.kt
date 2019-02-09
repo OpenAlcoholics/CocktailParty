@@ -45,7 +45,7 @@ class GlassDaoTest @Inject constructor(private val jdbi: Jdbi) : BaseDaoTest<Gla
         .map { query ->
             dynamicTest("""Search for "$query"""") {
                 val result = jdbi.withExtensionUnchecked(GlassDao::class) {
-                    it.search(query)
+                    it.search(query, 40, 0)
                 }
                 assertEquals(1, result.size)
             }
@@ -56,7 +56,7 @@ class GlassDaoTest @Inject constructor(private val jdbi: Jdbi) : BaseDaoTest<Gla
         .map { query ->
             dynamicTest("""Search for "$query"""") {
                 val result = jdbi.withExtensionUnchecked(GlassDao::class) {
-                    it.search(query)
+                    it.search(query, 40, 0)
                 }
                 assertEquals(emptyList(), result)
             }
