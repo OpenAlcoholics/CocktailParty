@@ -7,9 +7,9 @@ import group.openalcoholics.cocktailparty.api.bodyAs
 import group.openalcoholics.cocktailparty.api.end
 import group.openalcoholics.cocktailparty.api.pathId
 import group.openalcoholics.cocktailparty.api.setStatus
-import group.openalcoholics.cocktailparty.db.dao.CocktailAccessoryDao
+import group.openalcoholics.cocktailparty.db.dao.CocktailAccessoryCategoryDao
 import group.openalcoholics.cocktailparty.db.dao.CocktailDao
-import group.openalcoholics.cocktailparty.db.dao.CocktailIngredientDao
+import group.openalcoholics.cocktailparty.db.dao.RecipeDao
 import group.openalcoholics.cocktailparty.model.Cocktail
 import io.vertx.core.Future
 import io.vertx.ext.web.RoutingContext
@@ -18,7 +18,7 @@ import mu.KotlinLogging
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.useHandleUnchecked
 import org.jdbi.v3.core.kotlin.withExtensionUnchecked
-import java.util.*
+import java.util.ConcurrentModificationException
 import javax.inject.Inject
 
 class CocktailHandler @Inject constructor(private val jdbi: Jdbi) : HandlerController,
@@ -44,21 +44,24 @@ class CocktailHandler @Inject constructor(private val jdbi: Jdbi) : HandlerContr
                     val cocktailDao = handle.attach(CocktailDao::class.java)!!
                     val inserted = cocktail.withId(cocktailDao.insert(cocktail))
 
-                    val cocktailIngredientDao = handle.attach(CocktailIngredientDao::class.java)!!
-                    cocktail.ingredients.forEachIndexed { rank, ingredients ->
+                    val cocktailIngredientDao = handle.attach(RecipeDao::class.java)!!
+                    cocktail.ingredientCategories.forEachIndexed { rank, ingredients ->
                         ingredients.forEach { ingredient ->
-                            cocktailIngredientDao.addIngredient(
+                            cocktailIngredientDao.addIngredientCategory(
                                 inserted.id,
-                                ingredient.ingredientId,
+                                ingredient.ingredientCategoryId,
                                 ingredient.share,
                                 rank)
                         }
                     }
 
-                    val cocktailAccessoryDao = handle.attach(CocktailAccessoryDao::class.java)!!
-                    cocktail.accessories.forEach { accessory ->
-                        cocktailAccessoryDao
-                            .addAccessory(inserted.id, accessory.accessoryId, accessory.pieces)
+                    val cocktailAccessoryDao = handle
+                        .attach(CocktailAccessoryCategoryDao::class.java)!!
+                    cocktail.accessoryCategories.forEach { accessory ->
+                        cocktailAccessoryDao.addAccessory(
+                            inserted.id,
+                            accessory.accessoryCategoryId,
+                            accessory.pieces)
                     }
 
                     handle.commit()
@@ -90,19 +93,23 @@ class CocktailHandler @Inject constructor(private val jdbi: Jdbi) : HandlerContr
                 try {
                     cocktailDao.update(updated)
 
-                    handle.attach(CocktailIngredientDao::class.java).let { dao ->
-                        dao.dropIngredients(id)
-                        updated.ingredients.forEachIndexed { rank, ingredients ->
+                    handle.attach(RecipeDao::class.java).let { dao ->
+                        dao.dropIngredientCategories(id)
+                        updated.ingredientCategories.forEachIndexed { rank, ingredients ->
                             ingredients.forEach {
-                                dao.addIngredient(id, it.ingredientId, it.share, rank)
+                                dao.addIngredientCategory(
+                                    id,
+                                    it.ingredientCategoryId,
+                                    it.share,
+                                    rank)
                             }
                         }
                     }
 
-                    handle.attach(CocktailAccessoryDao::class.java).let { dao ->
+                    handle.attach(CocktailAccessoryCategoryDao::class.java).let { dao ->
                         dao.dropAccessories(id)
-                        updated.accessories.forEach {
-                            dao.addAccessory(id, it.accessoryId, it.pieces)
+                        updated.accessoryCategories.forEach {
+                            dao.addAccessory(id, it.accessoryCategoryId, it.pieces)
                         }
                     }
 

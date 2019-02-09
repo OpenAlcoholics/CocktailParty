@@ -48,7 +48,7 @@ interface IngredientDao : SqlObject, BaseDao<Ingredient> {
         }.mapTo(Ingredient::class.java).list()
 
     companion object : BaseDaoCompanion {
-        const val TABLE_NAME = "ingredients"
+        const val TABLE_NAME = "ingredient"
         override val tableName: String
             get() = TABLE_NAME
         override val columns = listOf(

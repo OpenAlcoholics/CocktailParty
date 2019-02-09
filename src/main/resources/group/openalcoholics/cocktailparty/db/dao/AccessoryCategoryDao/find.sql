@@ -1,3 +1,3 @@
 SELECT *
-FROM accessories_categories
+FROM accessory_category
 WHERE id=:id

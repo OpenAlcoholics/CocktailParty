@@ -1,3 +1,3 @@
 SELECT *
-FROM drink_categories
+FROM cocktail_category
 WHERE id=:id

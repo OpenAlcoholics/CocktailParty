@@ -2,8 +2,8 @@ package group.openalcoholics.cocktailparty.db.dao
 
 import com.google.inject.Inject
 import group.openalcoholics.cocktailparty.model.Cocktail
-import group.openalcoholics.cocktailparty.model.CocktailAccessory
-import group.openalcoholics.cocktailparty.model.CocktailIngredient
+import group.openalcoholics.cocktailparty.model.CocktailAccessoryCategory
+import group.openalcoholics.cocktailparty.model.CocktailIngredientCategory
 import io.vertx.core.json.Json
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.useExtensionUnchecked
@@ -17,9 +17,9 @@ import kotlin.test.assertNotNull
 
 class CocktailDaoTest @Inject constructor(private val jdbi: Jdbi) : BaseDaoTest<Cocktail> {
     private val ingredients = (1..3)
-        .map { CocktailIngredient(it, it * 10) }
+        .map { CocktailIngredientCategory(it, it * 10) }
     private val accessories = (1..2)
-        .map { CocktailAccessory(it, it * 3) }
+        .map { CocktailAccessoryCategory(it, it * 3) }
 
     private val categories = jdbi.withExtensionUnchecked(CocktailCategoryDao::class) { dao ->
         (1..2).map { dao.find(it) }.map { it!! }.toList()
@@ -59,15 +59,21 @@ class CocktailDaoTest @Inject constructor(private val jdbi: Jdbi) : BaseDaoTest<
     override fun insert(entity: Cocktail): Int = jdbi.withExtensionUnchecked(CocktailDao::class) {
         it.insert(entity)
     }.also { cocktailId ->
-        jdbi.withExtensionUnchecked(CocktailIngredientDao::class) {
-            entity.ingredients.forEachIndexed { rank, shares ->
+        jdbi.withExtensionUnchecked(RecipeDao::class) {
+            entity.ingredientCategories.forEachIndexed { rank, shares ->
                 shares.forEach { share ->
-                    it.addIngredient(cocktailId, share.ingredientId, share.share, rank)
+                    it.addIngredientCategory(
+                        cocktailId,
+                        share.ingredientCategoryId,
+                        share.share,
+                        rank)
                 }
             }
         }
-        jdbi.withExtensionUnchecked(CocktailAccessoryDao::class) { dao ->
-            entity.accessories.forEach { dao.addAccessory(cocktailId, it.accessoryId, it.pieces) }
+        jdbi.withExtensionUnchecked(CocktailAccessoryCategoryDao::class) { dao ->
+            entity.accessoryCategories.forEach {
+                dao.addAccessory(cocktailId, it.accessoryCategoryId, it.pieces)
+            }
         }
     }
 
@@ -98,7 +104,9 @@ class CocktailDaoTest @Inject constructor(private val jdbi: Jdbi) : BaseDaoTest<
                 }
                 assertEquals(expectedSize, result.size, Json.encodePrettily(result))
                 for (cocktail in result) {
-                    val ingredients = cocktail.ingredients.flatten().toList()
+                    val ingredients = cocktail.ingredientCategories
+                        .flatten()
+                        .toList()
                     ingredients.forEach {
                         assertNotNull(it.rank)
                     }

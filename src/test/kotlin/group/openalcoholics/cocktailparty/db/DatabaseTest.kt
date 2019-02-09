@@ -20,7 +20,7 @@ interface DatabaseTest {
     fun clean(dataSource: DataSource) {
         val flyway = Flyway.configure()
             .dataSource(dataSource)
-            .locations("openapi/sql")
+            .locations("openapi/sql", "openapi/mockSql")
             .load()!!
         flyway.clean()
         flyway.migrate()

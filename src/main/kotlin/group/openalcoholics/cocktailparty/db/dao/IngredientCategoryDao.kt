@@ -22,7 +22,7 @@ interface IngredientCategoryDao : SqlObject, BaseDao<IngredientCategory> {
         .list()
 
     companion object : BaseDaoCompanion {
-        const val TABLE_NAME = "ingredient_categories"
+        const val TABLE_NAME = "ingredient_category"
         override val tableName: String
             get() = TABLE_NAME
         override val columns = listOf("id", "name", "description", "is_alcoholic", "image_link")

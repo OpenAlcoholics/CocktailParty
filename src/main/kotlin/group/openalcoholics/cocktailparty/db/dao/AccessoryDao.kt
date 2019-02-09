@@ -47,7 +47,7 @@ interface AccessoryDao : SqlObject, BaseDao<Accessory> {
         }.mapTo(Accessory::class.java).list()
 
     companion object : BaseDaoCompanion {
-        const val TABLE_NAME = "accessories"
+        const val TABLE_NAME = "accessory"
         override val tableName: String
             get() = TABLE_NAME
         override val columns = listOf("id", "name", "description", "image_link", "category_id")

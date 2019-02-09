@@ -1,4 +1,4 @@
-UPDATE accessories_categories
+UPDATE accessory_category
 SET name = :entity.name,
     description = :entity.description,
     image_link = :entity.imageLink

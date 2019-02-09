@@ -36,7 +36,7 @@ class AccessoryCategoryDaoTest @Inject constructor(private val jdbi: Jdbi) :
         it.update(entity)
     }
 
-    override fun delete(id: Int) = jdbi.useExtensionUnchecked(IngredientCategoryDao::class) {
+    override fun delete(id: Int) = jdbi.useExtensionUnchecked(AccessoryCategoryDao::class) {
         it.delete(id)
     }
 

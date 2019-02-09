@@ -1,2 +1,2 @@
-DELETE FROM glasses
+DELETE FROM glass
 WHERE id = :id

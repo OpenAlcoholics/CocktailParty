@@ -1,2 +1,2 @@
-DELETE FROM accessories_categories
+DELETE FROM accessory_category
 WHERE id = :id

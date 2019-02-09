@@ -1,2 +1,2 @@
-DELETE FROM ingredient_categories
+DELETE FROM ingredient_category
 WHERE id = :id

@@ -22,7 +22,7 @@ interface GlassDao : SqlObject, BaseDao<Glass> {
         .list()
 
     companion object : BaseDaoCompanion {
-        const val TABLE_NAME = "glasses"
+        const val TABLE_NAME = "glass"
         override val tableName: String
             get() = TABLE_NAME
         override val columns: List<String> = listOf("id", "name", "estimated_size", "image_link")

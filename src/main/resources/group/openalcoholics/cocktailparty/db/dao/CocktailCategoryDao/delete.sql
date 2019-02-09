@@ -1,2 +1,2 @@
-DELETE FROM drink_categories
+DELETE FROM cocktail_category
 WHERE id = :id

@@ -1,35 +1,35 @@
 package group.openalcoholics.cocktailparty.db.dao
 
-import group.openalcoholics.cocktailparty.model.CocktailAccessory
+import group.openalcoholics.cocktailparty.model.CocktailAccessoryCategory
 import org.jdbi.v3.sqlobject.SqlObject
 import org.jdbi.v3.sqlobject.statement.SqlUpdate
 
-interface CocktailAccessoryDao : SqlObject, BaseDao<CocktailAccessory> {
+interface CocktailAccessoryCategoryDao : SqlObject, BaseDao<CocktailAccessoryCategory> {
     @SqlUpdate("""
         DELETE FROM $TABLE_NAME
-        WHERE drink_id = :cocktailId
+        WHERE cocktail_id = :cocktailId
     """)
     fun dropAccessories(cocktailId: Int)
 
     @SqlUpdate("""
         INSERT INTO $TABLE_NAME (
-            drink_id,
-            accessories_id,
+            cocktail_id,
+            accessory_category_id,
             pieces)
         VALUES(
             :cocktailId,
-            :accessoryId,
+            :accessoryCategoryId,
             :pieces)
     """)
-    fun addAccessory(cocktailId: Int, accessoryId: Int, pieces: Int)
+    fun addAccessory(cocktailId: Int, accessoryCategoryId: Int, pieces: Int)
 
     companion object : BaseDaoCompanion {
-        const val TABLE_NAME = "drink_accessories"
+        const val TABLE_NAME = "cocktail_accessory"
         override val tableName: String
             get() = TABLE_NAME
         override val columns: List<String> = listOf(
-            "drink_id",
-            "accessories_id",
+            "cocktail_id",
+            "accessory_category_id",
             "pieces"
         )
     }

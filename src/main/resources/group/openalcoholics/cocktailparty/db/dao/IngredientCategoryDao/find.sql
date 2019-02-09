@@ -1,3 +1,3 @@
 SELECT *
-FROM ingredient_categories
+FROM ingredient_category
 WHERE id=:id

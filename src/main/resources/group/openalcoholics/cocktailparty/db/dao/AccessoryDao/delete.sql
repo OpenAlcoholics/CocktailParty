@@ -1,2 +1,2 @@
-DELETE FROM accessories
+DELETE FROM accessory
 WHERE id = :id

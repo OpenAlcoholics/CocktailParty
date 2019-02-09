@@ -1,2 +1,2 @@
-DELETE FROM ingredients
+DELETE FROM ingredient
 WHERE id = :id

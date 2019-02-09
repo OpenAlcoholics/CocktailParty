@@ -1,3 +1,3 @@
 SELECT *
-FROM glasses
+FROM glass
 WHERE id=:id

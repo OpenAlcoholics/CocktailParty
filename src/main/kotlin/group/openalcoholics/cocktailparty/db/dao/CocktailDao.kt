@@ -1,11 +1,11 @@
 package group.openalcoholics.cocktailparty.db.dao
 
 import group.openalcoholics.cocktailparty.model.Cocktail
-import group.openalcoholics.cocktailparty.model.CocktailAccessory
-import group.openalcoholics.cocktailparty.model.CocktailIngredient
+import group.openalcoholics.cocktailparty.model.CocktailAccessoryCategory
+import group.openalcoholics.cocktailparty.model.CocktailIngredientCategory
 import org.jdbi.v3.core.kotlin.KotlinMapper
 import org.jdbi.v3.sqlobject.SqlObject
-import java.util.*
+import java.util.LinkedHashMap
 
 interface CocktailDao : SqlObject, BaseDao<Cocktail> {
     override fun find(id: Int): Cocktail? = handle
@@ -13,8 +13,9 @@ interface CocktailDao : SqlObject, BaseDao<Cocktail> {
                 SELECT $LOCAL_HEAD,
                     ${CocktailCategoryDao.head("${CocktailCategoryDao.TABLE_NAME}.")},
                     ${GlassDao.head("${GlassDao.TABLE_NAME}.")},
-                    ${CocktailIngredientDao.head("${CocktailIngredientDao.TABLE_NAME}.")},
-                    ${CocktailAccessoryDao.head("${CocktailAccessoryDao.TABLE_NAME}.")}
+                    ${RecipeDao.head("${RecipeDao.TABLE_NAME}.")},
+                    ${CocktailAccessoryCategoryDao.head(
+            "${CocktailAccessoryCategoryDao.TABLE_NAME}.")}
                 FROM (SELECT *
                     FROM $TABLE_NAME
                     WHERE $TABLE_NAME.id = :id
@@ -23,27 +24,29 @@ interface CocktailDao : SqlObject, BaseDao<Cocktail> {
                     ON ${CocktailCategoryDao.TABLE_NAME}.id = $TABLE_NAME.category_id
                 INNER JOIN ${GlassDao.TABLE_NAME}
                     ON ${GlassDao.TABLE_NAME}.id = $TABLE_NAME.glass_id
-                LEFT JOIN ${CocktailIngredientDao.TABLE_NAME}
-                    ON ${CocktailIngredientDao.TABLE_NAME}.drink_id = $TABLE_NAME.id
-                LEFT JOIN ${CocktailAccessoryDao.TABLE_NAME}
-                    ON ${CocktailAccessoryDao.TABLE_NAME}.drink_id = $TABLE_NAME.id
+                LEFT JOIN ${RecipeDao.TABLE_NAME}
+                    ON ${RecipeDao.TABLE_NAME}.cocktail_id = $TABLE_NAME.id
+                LEFT JOIN ${CocktailAccessoryCategoryDao.TABLE_NAME}
+                    ON ${CocktailAccessoryCategoryDao.TABLE_NAME}.cocktail_id = $TABLE_NAME.id
             """.trimIndent())
         .bind("id", id)
-        .registerRowMapper(CocktailIngredient::class.java,
-            KotlinMapper(CocktailIngredient::class.java, "${CocktailIngredientDao.TABLE_NAME}."))
-        .registerRowMapper(CocktailAccessory::class.java,
-            KotlinMapper(CocktailAccessory::class.java, "${CocktailAccessoryDao.TABLE_NAME}."))
+        .registerRowMapper(CocktailIngredientCategory::class.java,
+            KotlinMapper(CocktailIngredientCategory::class.java,
+                "${RecipeDao.TABLE_NAME}."))
+        .registerRowMapper(CocktailAccessoryCategory::class.java,
+            KotlinMapper(CocktailAccessoryCategory::class.java,
+                "${CocktailAccessoryCategoryDao.TABLE_NAME}."))
         .reduceRows(null) { mainTail: Cocktail?, r ->
             val cocktail = mainTail ?: r.getRow(Cocktail::class.java)
-            if (r.getColumn("${CocktailIngredientDao.TABLE_NAME}.drink_id",
+            if (r.getColumn("${RecipeDao.TABLE_NAME}.cocktail_id",
                     Integer::class.java) != null) {
-                val cocktailIngredient = r.getRow(CocktailIngredient::class.java)
-                cocktail.flatIngredients.add(cocktailIngredient)
+                val cocktailIngredient = r.getRow(CocktailIngredientCategory::class.java)
+                cocktail.flatIngredientCategories.add(cocktailIngredient)
             }
-            if (r.getColumn("${CocktailAccessoryDao.TABLE_NAME}.drink_id",
+            if (r.getColumn("${CocktailAccessoryCategoryDao.TABLE_NAME}.cocktail_id",
                     Integer::class.java) != null) {
-                val cocktailAccessory = r.getRow(CocktailAccessory::class.java)
-                cocktail.mutableAccessories.add(cocktailAccessory)
+                val cocktailAccessory = r.getRow(CocktailAccessoryCategory::class.java)
+                cocktail.mutableAccessoryCategories.add(cocktailAccessory)
             }
 
             cocktail
@@ -66,8 +69,8 @@ interface CocktailDao : SqlObject, BaseDao<Cocktail> {
             SELECT $LOCAL_HEAD,
                 ${CocktailCategoryDao.head("${CocktailCategoryDao.TABLE_NAME}.")},
                 ${GlassDao.head("${GlassDao.TABLE_NAME}.")},
-                ${CocktailIngredientDao.head("${CocktailIngredientDao.TABLE_NAME}.")},
-                ${CocktailAccessoryDao.head("${CocktailAccessoryDao.TABLE_NAME}.")}
+                ${RecipeDao.head("${RecipeDao.TABLE_NAME}.")},
+                ${CocktailAccessoryCategoryDao.head("${CocktailAccessoryCategoryDao.TABLE_NAME}.")}
             FROM (SELECT *
                 FROM $TABLE_NAME
                 WHERE (TRUE
@@ -79,35 +82,35 @@ interface CocktailDao : SqlObject, BaseDao<Cocktail> {
                 ON ${CocktailCategoryDao.TABLE_NAME}.id = $TABLE_NAME.category_id
             INNER JOIN ${GlassDao.TABLE_NAME}
                 ON ${GlassDao.TABLE_NAME}.id = $TABLE_NAME.glass_id
-            LEFT JOIN ${CocktailIngredientDao.TABLE_NAME}
-                ON ${CocktailIngredientDao.TABLE_NAME}.drink_id = $TABLE_NAME.id
-            LEFT JOIN ${CocktailAccessoryDao.TABLE_NAME}
-                ON ${CocktailAccessoryDao.TABLE_NAME}.drink_id = $TABLE_NAME.id
+            LEFT JOIN ${RecipeDao.TABLE_NAME}
+                ON ${RecipeDao.TABLE_NAME}.cocktail_id = $TABLE_NAME.id
+            LEFT JOIN ${CocktailAccessoryCategoryDao.TABLE_NAME}
+                ON ${CocktailAccessoryCategoryDao.TABLE_NAME}.cocktail_id = $TABLE_NAME.id
         """).apply {
             if (query != null) bind("q", query)
             if (category != null) bind("category", category)
         }
-        .registerRowMapper(CocktailIngredient::class.java,
-            KotlinMapper(CocktailIngredient::class.java,
-                "${CocktailIngredientDao.TABLE_NAME}."))
-        .registerRowMapper(CocktailAccessory::class.java,
-            KotlinMapper(CocktailAccessory::class.java,
-                "${CocktailAccessoryDao.TABLE_NAME}."))
+        .registerRowMapper(CocktailIngredientCategory::class.java,
+            KotlinMapper(CocktailIngredientCategory::class.java,
+                "${RecipeDao.TABLE_NAME}."))
+        .registerRowMapper(CocktailAccessoryCategory::class.java,
+            KotlinMapper(CocktailAccessoryCategory::class.java,
+                "${CocktailAccessoryCategoryDao.TABLE_NAME}."))
         .reduceRows(LinkedHashMap<Int, Cocktail>()) { map, r ->
             val cocktail = map.computeIfAbsent(r.getColumn("id", Integer::class.java).toInt()) {
                 val cocktail = r.getRow(Cocktail::class.java)
                 cocktail
             }
 
-            if (r.getColumn("${CocktailIngredientDao.TABLE_NAME}.drink_id",
+            if (r.getColumn("${RecipeDao.TABLE_NAME}.cocktail_id",
                     Integer::class.java) != null) {
-                val cocktailIngredient = r.getRow(CocktailIngredient::class.java)
-                cocktail.flatIngredients.add(cocktailIngredient)
+                val cocktailIngredient = r.getRow(CocktailIngredientCategory::class.java)
+                cocktail.flatIngredientCategories.add(cocktailIngredient)
             }
-            if (r.getColumn("${CocktailAccessoryDao.TABLE_NAME}.drink_id",
+            if (r.getColumn("${CocktailAccessoryCategoryDao.TABLE_NAME}.cocktail_id",
                     Integer::class.java) != null) {
-                val cocktailAccessory = r.getRow(CocktailAccessory::class.java)
-                cocktail.mutableAccessories.add(cocktailAccessory)
+                val cocktailAccessory = r.getRow(CocktailAccessoryCategory::class.java)
+                cocktail.mutableAccessoryCategories.add(cocktailAccessory)
             }
             map
         }
@@ -115,7 +118,7 @@ interface CocktailDao : SqlObject, BaseDao<Cocktail> {
         .map { it.transferFromMutable() }
 
     companion object : BaseDaoCompanion {
-        const val TABLE_NAME = "drinks"
+        const val TABLE_NAME = "cocktail"
         override val tableName: String
             get() = TABLE_NAME
         override val columns: List<String> = listOf(

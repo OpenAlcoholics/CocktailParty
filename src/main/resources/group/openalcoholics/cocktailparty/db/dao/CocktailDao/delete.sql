@@ -1,2 +1,2 @@
-DELETE FROM drinks
+DELETE FROM cocktail
 WHERE id = :id
