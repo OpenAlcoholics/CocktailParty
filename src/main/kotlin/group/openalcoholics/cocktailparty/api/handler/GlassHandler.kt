@@ -26,7 +26,7 @@ class GlassHandler @Inject constructor(private val jdbi: Jdbi) : HandlerControll
     }
 
     private fun search(ctx: RoutingContext) {
-        val query = ctx.queryParam("q").first()
+        val query = ctx.queryParam("q").firstOrNull()
         ctx.vertx().executeBlocking({ future: Future<List<Glass>> ->
             future.complete(jdbi.withExtensionUnchecked(GlassDao::class) {
                 it.search(query)

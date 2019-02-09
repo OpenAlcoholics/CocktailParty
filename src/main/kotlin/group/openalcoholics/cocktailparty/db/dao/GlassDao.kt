@@ -12,12 +12,12 @@ interface GlassDao : SqlObject, BaseDao<Glass> {
      * @param query a search query
      * @return a list of matching glasses
      */
-    fun search(query: String): List<Glass> = handle
+    fun search(query: String?): List<Glass> = handle
         .createQuery("""
             SELECT * FROM $TABLE_NAME
-            WHERE LOWER(name) LIKE LOWER(CONCAT(\'%\', :q, \'%\'))
+            ${if (query == null) "" else "WHERE LOWER(name) LIKE LOWER(CONCAT(\'%\', :q, \'%\'))"}
         """)
-        .bind("q", query)
+        .apply { if (query != null) bind("q", query) }
         .mapTo(Glass::class.java)
         .list()
 
