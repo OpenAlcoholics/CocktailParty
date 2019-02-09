@@ -3,6 +3,8 @@ package group.openalcoholics.cocktailparty.api
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.google.inject.Inject
+import group.openalcoholics.cocktailparty.api.handler.AccessoryCategoryHandler
+import group.openalcoholics.cocktailparty.api.handler.AccessoryHandler
 import group.openalcoholics.cocktailparty.api.handler.AdminLoginHandler
 import group.openalcoholics.cocktailparty.api.handler.AdminSecurityHandler
 import group.openalcoholics.cocktailparty.api.handler.AuthConfigurationException
@@ -30,6 +32,8 @@ class Api @Inject constructor(
     private val authConfig: AuthConfig,
     private val jwtAuth: JWTAuth,
     private val versionHandler: VersionHandler,
+    private val accessoryCategoryHandler: AccessoryCategoryHandler,
+    private val accessoryHandler: AccessoryHandler,
     private val glassHandler: GlassHandler,
     private val ingredientCategoryHandler: IngredientCategoryHandler,
     private val ingredientHandler: IngredientHandler,
@@ -58,6 +62,8 @@ class Api @Inject constructor(
 
                 routerFactory
                     .register(versionHandler)
+                    .register(accessoryCategoryHandler)
+                    .register(accessoryHandler)
                     .register(glassHandler)
                     .register(ingredientCategoryHandler)
                     .register(ingredientHandler)
