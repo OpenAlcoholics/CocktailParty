@@ -1,10 +1,10 @@
 package group.openalcoholics.cocktailparty.db.dao
 
-import group.openalcoholics.cocktailparty.model.CocktailIngredientCategory
+import group.openalcoholics.cocktailparty.model.CocktailIngredient
 import org.jdbi.v3.sqlobject.SqlObject
 import org.jdbi.v3.sqlobject.statement.SqlUpdate
 
-interface RecipeDao : SqlObject, BaseDao<CocktailIngredientCategory> {
+interface RecipeDao : SqlObject, BaseDao<CocktailIngredient> {
     @SqlUpdate("""
         DELETE FROM $TABLE_NAME
         WHERE cocktail_id = :cocktailId
@@ -19,7 +19,7 @@ interface RecipeDao : SqlObject, BaseDao<CocktailIngredientCategory> {
             rank)
         VALUES(
             :cocktailId,
-            :ingredientCategoryId,
+            :genericIngredientId,
             :share,
             :rank)
     """)

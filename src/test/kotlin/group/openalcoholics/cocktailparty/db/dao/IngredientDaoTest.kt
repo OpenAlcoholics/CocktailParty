@@ -13,7 +13,7 @@ import kotlin.test.assertEquals
 
 class IngredientDaoTest @Inject constructor(private val jdbi: Jdbi) : BaseDaoTest<Ingredient> {
 
-    private val categories = jdbi.withExtensionUnchecked(IngredientCategoryDao::class) { dao ->
+    private val generic = jdbi.withExtensionUnchecked(GenericIngredientDao::class) { dao ->
         (1..2).map { dao.find(it) }.map { it!! }.toList()
     }
 
@@ -21,14 +21,15 @@ class IngredientDaoTest @Inject constructor(private val jdbi: Jdbi) : BaseDaoTes
         id,
         "name$id",
         100,
-        categories[0],
+        generic[0],
         "link$id",
-        "notes$id")
+        "notes$id"
+    )
 
     override fun modifiedVersions(entity: Ingredient): Sequence<Ingredient> = sequenceOf(
         entity.copy(name = entity.name + "Mod"),
         entity.copy(alcoholPercentage = entity.alcoholPercentage - 1),
-        entity.copy(category = categories[1]),
+        entity.copy(generic = generic[1]),
         entity.copy(imageLink = entity.imageLink + "Mod"),
         entity.copy(imageLink = null),
         entity.copy(notes = entity.notes + "Mod")
@@ -39,7 +40,8 @@ class IngredientDaoTest @Inject constructor(private val jdbi: Jdbi) : BaseDaoTes
     }
 
     override fun insert(entity: Ingredient): Int = jdbi.withExtensionUnchecked(
-        IngredientDao::class) {
+        IngredientDao::class
+    ) {
         it.insert(entity)
     }
 
@@ -51,7 +53,7 @@ class IngredientDaoTest @Inject constructor(private val jdbi: Jdbi) : BaseDaoTes
         it.delete(id)
     }
 
-    private data class Search(val query: String?, val category: Int?, val expectedSize: Int)
+    private data class Search(val query: String?, val genericId: Int?, val expectedSize: Int)
 
     @TestFactory
     fun searchKnown(): Stream<DynamicTest> = sequenceOf(
@@ -59,11 +61,12 @@ class IngredientDaoTest @Inject constructor(private val jdbi: Jdbi) : BaseDaoTes
         Search(null, null, 5),
         Search("gin", null, 1),
         Search(null, 1, 2),
-        Search(null, 2, 1))
-        .map { (query, category, expectedSize) ->
-            DynamicTest.dynamicTest("""Search for "$query" in category $category""") {
+        Search(null, 2, 1)
+    )
+        .map { (query, genericId, expectedSize) ->
+            DynamicTest.dynamicTest("""Search for "$query", genericId=$genericId""") {
                 val result = jdbi.withExtensionUnchecked(IngredientDao::class) {
-                    it.search(query, category, 40, 0)
+                    it.search(query, genericId, 40, 0)
                 }
                 assertEquals(expectedSize, result.size)
             }
@@ -73,7 +76,8 @@ class IngredientDaoTest @Inject constructor(private val jdbi: Jdbi) : BaseDaoTes
     fun searchUnknown(): Stream<DynamicTest> = sequenceOf(
         "*" to null,
         "bricks" to null,
-        null to 42)
+        null to 42
+    )
         .map { (query, category) ->
             DynamicTest.dynamicTest("""Search for "$query"""") {
                 val result = jdbi.withExtensionUnchecked(IngredientDao::class) {

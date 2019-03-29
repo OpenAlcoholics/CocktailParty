@@ -1,7 +1,7 @@
 package group.openalcoholics.cocktailparty.db.dao
 
 import com.google.inject.Inject
-import group.openalcoholics.cocktailparty.model.AccessoryCategory
+import group.openalcoholics.cocktailparty.model.GenericIngredient
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.useExtensionUnchecked
 import org.jdbi.v3.core.kotlin.withExtensionUnchecked
@@ -11,41 +11,41 @@ import java.util.stream.Stream
 import kotlin.streams.asStream
 import kotlin.test.assertEquals
 
-class AccessoryCategoryDaoTest @Inject constructor(private val jdbi: Jdbi) :
-    BaseDaoTest<AccessoryCategory> {
+class GenericIngredientDaoTest @Inject constructor(private val jdbi: Jdbi) : BaseDaoTest<GenericIngredient> {
 
-    override fun create(id: Int): AccessoryCategory =
-        AccessoryCategory(id, "testName$id", "testDescription$id", "testLink$id")
+    override fun create(id: Int): GenericIngredient =
+        GenericIngredient(id, "testName$id", "testDescription$id", false, "testLink$id")
 
-    override fun modifiedVersions(entity: AccessoryCategory) = sequenceOf(
+    override fun modifiedVersions(entity: GenericIngredient) = sequenceOf(
         entity.copy(name = entity.name + "Mod"),
         entity.copy(description = entity.description + "Mod"),
+        entity.copy(isAlcoholic = !entity.isAlcoholic),
         entity.copy(imageLink = entity.imageLink + "Mod"),
         entity.copy(imageLink = null)
     )
 
-    override fun find(id: Int): AccessoryCategory? = jdbi.withExtensionUnchecked(AccessoryCategoryDao::class) {
+    override fun find(id: Int): GenericIngredient? = jdbi.withExtensionUnchecked(GenericIngredientDao::class) {
         it.find(id)
     }
 
-    override fun insert(entity: AccessoryCategory): Int = jdbi.withExtensionUnchecked(AccessoryCategoryDao::class) {
+    override fun insert(entity: GenericIngredient): Int = jdbi.withExtensionUnchecked(GenericIngredientDao::class) {
         it.insert(entity)
     }
 
-    override fun update(entity: AccessoryCategory) = jdbi.useExtensionUnchecked(AccessoryCategoryDao::class) {
+    override fun update(entity: GenericIngredient) = jdbi.useExtensionUnchecked(GenericIngredientDao::class) {
         it.update(entity)
     }
 
-    override fun delete(id: Int) = jdbi.useExtensionUnchecked(AccessoryCategoryDao::class) {
+    override fun delete(id: Int) = jdbi.useExtensionUnchecked(GenericIngredientDao::class) {
         it.delete(id)
     }
 
     @TestFactory
     fun searchKnown(): Stream<DynamicTest> = sequenceOf(
-        "" to 2, "cucumber" to 1, "CuMb" to 1)
+        "" to 6, "rum" to 2)
         .map { (query, count) ->
             DynamicTest.dynamicTest("""Search for "$query"""") {
-                val result = jdbi.withExtensionUnchecked(AccessoryCategoryDao::class) {
+                val result = jdbi.withExtensionUnchecked(GenericIngredientDao::class) {
                     it.search(query, 40, 0)
                 }
                 assertEquals(count, result.size)
@@ -53,10 +53,10 @@ class AccessoryCategoryDaoTest @Inject constructor(private val jdbi: Jdbi) :
         }.asStream()
 
     @TestFactory
-    fun searchUnknown(): Stream<DynamicTest> = sequenceOf("*", "moin")
+    fun searchUnknown(): Stream<DynamicTest> = sequenceOf("*", "moin", "l")
         .map { query ->
             DynamicTest.dynamicTest("""Search for "$query"""") {
-                val result = jdbi.withExtensionUnchecked(AccessoryCategoryDao::class) {
+                val result = jdbi.withExtensionUnchecked(GenericIngredientDao::class) {
                     it.search(query, 40, 0)
                 }
                 assertEquals(emptyList(), result)

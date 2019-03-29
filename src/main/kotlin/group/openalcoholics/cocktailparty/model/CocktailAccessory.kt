@@ -5,11 +5,11 @@ import org.jdbi.v3.core.mapper.reflect.ColumnName
 /**
  * The relation of an accessory to a cocktail.
  *
- * @param accessoryCategoryId The accessory category ID.
+ * @param accessoryId The accessory generic ID.
  * @param pieces The suggested amount of pieces of this accessory in a cocktail.
  */
-data class CocktailAccessoryCategory(
-    @ColumnName("accessory_category_id")
-    val accessoryCategoryId: Int,
+data class CocktailAccessory(
+    @ColumnName("accessory_id")
+    val accessoryId: Int,
     val pieces: Int
 )

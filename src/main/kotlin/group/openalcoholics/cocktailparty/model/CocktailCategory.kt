@@ -1,11 +1,11 @@
 package group.openalcoholics.cocktailparty.model
 
 /**
- * A cocktail category.
- * @param id The category ID
- * @param name The name of the category
- * @param description The description for the category
- * @param imageLink A link to an image representing the category
+ * A cocktail generic.
+ * @param id The generic ID
+ * @param name The name of the generic
+ * @param description The description for the generic
+ * @param imageLink A link to an image representing the generic
  */
 data class CocktailCategory(
     val id: kotlin.Int,

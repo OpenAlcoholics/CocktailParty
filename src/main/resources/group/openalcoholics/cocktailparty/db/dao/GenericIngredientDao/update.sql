@@ -1,4 +1,4 @@
-UPDATE ingredient_category
+UPDATE generic_ingredient
 SET name = :entity.name,
     description = :entity.description,
     image_link = :entity.imageLink,
