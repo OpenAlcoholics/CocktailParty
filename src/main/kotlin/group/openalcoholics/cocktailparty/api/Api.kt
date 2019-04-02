@@ -7,11 +7,12 @@ import group.openalcoholics.cocktailparty.api.handler.AccessoryHandler
 import group.openalcoholics.cocktailparty.api.handler.AdminLoginHandler
 import group.openalcoholics.cocktailparty.api.handler.AdminSecurityHandler
 import group.openalcoholics.cocktailparty.api.handler.AuthConfigurationException
+import group.openalcoholics.cocktailparty.api.handler.CocktailAccessoryHandler
 import group.openalcoholics.cocktailparty.api.handler.CocktailCategoryHandler
 import group.openalcoholics.cocktailparty.api.handler.CocktailHandler
 import group.openalcoholics.cocktailparty.api.handler.FailureHandler
-import group.openalcoholics.cocktailparty.api.handler.GlassHandler
 import group.openalcoholics.cocktailparty.api.handler.GenericIngredientHandler
+import group.openalcoholics.cocktailparty.api.handler.GlassHandler
 import group.openalcoholics.cocktailparty.api.handler.IngredientHandler
 import group.openalcoholics.cocktailparty.api.handler.SecurityHandler
 import group.openalcoholics.cocktailparty.api.handler.VersionHandler
@@ -23,7 +24,6 @@ import io.vertx.core.http.HttpServerOptions
 import io.vertx.core.json.Json
 import io.vertx.ext.auth.jwt.JWTAuth
 import io.vertx.ext.web.api.contract.openapi3.OpenAPI3RouterFactory
-import io.vertx.kotlin.ext.web.api.contract.RouterFactoryOptions
 import mu.KotlinLogging
 
 class Api @Inject constructor(
@@ -36,7 +36,9 @@ class Api @Inject constructor(
     private val genericIngredientHandler: GenericIngredientHandler,
     private val ingredientHandler: IngredientHandler,
     private val cocktailCategoryHandler: CocktailCategoryHandler,
-    private val cocktailHandler: CocktailHandler) : AbstractVerticle() {
+    private val cocktailHandler: CocktailHandler,
+    private val cocktailAccessoryHandler: CocktailAccessoryHandler
+) : AbstractVerticle() {
 
     private val logger = KotlinLogging.logger {}
 
@@ -65,6 +67,7 @@ class Api @Inject constructor(
                     .register(ingredientHandler)
                     .register(cocktailCategoryHandler)
                     .register(cocktailHandler)
+                    .register(cocktailAccessoryHandler)
 
                     // TODO this is a temporary endpoint until we have a proper solution
                     .register(AdminLoginHandler(jwtAuth, authConfig))
