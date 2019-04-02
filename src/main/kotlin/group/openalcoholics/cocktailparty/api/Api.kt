@@ -11,7 +11,7 @@ import group.openalcoholics.cocktailparty.api.handler.CocktailCategoryHandler
 import group.openalcoholics.cocktailparty.api.handler.CocktailHandler
 import group.openalcoholics.cocktailparty.api.handler.FailureHandler
 import group.openalcoholics.cocktailparty.api.handler.GlassHandler
-import group.openalcoholics.cocktailparty.api.handler.IngredientCategoryHandler
+import group.openalcoholics.cocktailparty.api.handler.GenericIngredientHandler
 import group.openalcoholics.cocktailparty.api.handler.IngredientHandler
 import group.openalcoholics.cocktailparty.api.handler.SecurityHandler
 import group.openalcoholics.cocktailparty.api.handler.VersionHandler
@@ -33,7 +33,7 @@ class Api @Inject constructor(
     private val versionHandler: VersionHandler,
     private val accessoryHandler: AccessoryHandler,
     private val glassHandler: GlassHandler,
-    private val ingredientCategoryHandler: IngredientCategoryHandler,
+    private val genericIngredientHandler: GenericIngredientHandler,
     private val ingredientHandler: IngredientHandler,
     private val cocktailCategoryHandler: CocktailCategoryHandler,
     private val cocktailHandler: CocktailHandler) : AbstractVerticle() {
@@ -56,13 +56,12 @@ class Api @Inject constructor(
 
                 // Spec loaded with success
                 val routerFactory = result.result()!!
-                routerFactory.options = RouterFactoryOptions()
 
                 routerFactory
                     .register(versionHandler)
                     .register(accessoryHandler)
                     .register(glassHandler)
-                    .register(ingredientCategoryHandler)
+                    .register(genericIngredientHandler)
                     .register(ingredientHandler)
                     .register(cocktailCategoryHandler)
                     .register(cocktailHandler)

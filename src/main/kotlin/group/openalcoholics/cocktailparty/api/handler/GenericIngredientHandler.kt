@@ -12,7 +12,7 @@ import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.withExtensionUnchecked
 import javax.inject.Inject
 
-class IngredientCategoryHandler @Inject constructor(private val jdbi: Jdbi) : HandlerController,
+class GenericIngredientHandler @Inject constructor(private val jdbi: Jdbi) : HandlerController,
     CrudHandler by defaultCrudHandler<GenericIngredient, GenericIngredientDao>(jdbi) {
 
     private val logger = KotlinLogging.logger { }
